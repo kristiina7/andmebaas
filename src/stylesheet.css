@@ -1,0 +1,26 @@
+.root{
+    -fx-font-size: 16pt;
+    -fx-font-family: "Bernard MT Condensed";
+    -fx-background-color: #ffffff;
+}
+.vbox {
+     -fx-padding: 20;
+     -fx-spacing: 30;
+     -fx-alignment: top-center;
+     -fx-background-color: #000000;
+ }
+ .label{
+    -fx-text-fill: #ffffff;
+ }
+ .label-event{
+    -fx-text-fill: #e30311;
+ }
+
+#pane{
+     -fx-background-image: url("triiniks6.png");
+     -fx-background-color: #000000;
+     -fx-background-size: 700, 500;
+     -fx-background-repeat: no-repeat;
+     -fx-background-position: right bottom;
+     -fx-opacity: 0.9;
+ }
