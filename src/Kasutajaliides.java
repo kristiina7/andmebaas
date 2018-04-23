@@ -36,7 +36,7 @@ public class Kasutajaliides extends Application {
 
         //menüü vasakul
         VBox menüü = new VBox(10);
-        menüü.getStyleClass().add("vbox");
+        menüü.getStyleClass().add("vBox");
         Label otsimine = new Label("Otsi");
         Label lisamine = new Label("Lisa");
         Label aktiivsus = new Label("Aktiivsus"); //rühma põhjal (annab nimekirja ja kohalolud)
@@ -56,6 +56,11 @@ public class Kasutajaliides extends Application {
         aktiivsus.setOnMouseExited(event -> {aktiivsus.getStyleClass().clear(); aktiivsus.getStyleClass().add("label");});
         saavutused.setOnMouseExited(event -> {saavutused.getStyleClass().clear(); saavutused.getStyleClass().add("label");});
 
+        //kui vajutada otsing
+        otsimine.setOnMouseClicked(event -> {
+            Otsing uusOtsi = new Otsing();
+            piirid.setCenter(uusOtsi.annaOtsing());
+        });
 
         //taust
         StackPane taust = new StackPane();

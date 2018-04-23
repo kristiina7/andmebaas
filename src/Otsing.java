@@ -15,12 +15,13 @@ public class Otsing {
     private ComboBox<String> valikud = new ComboBox<>(otsitavad);
 
     public GridPane annaOtsing(){
+        valikud.getStyleClass().add("combo-box");
         valikud.getSelectionModel().select(0); //valib automaatselt alguses õpilase
-        grid.getStyleClass().add("gridPane");
+        grid.getStyleClass().add("grid-pane");
         grid.add(valikud, 0, 0);
         TextField otsitav = new TextField();
-        //ToggleButton otsi = new ToggleButton("Otsi");
-        //grid.add(otsi, 1,6);
+        ToggleButton otsi = new ToggleButton("Otsi");
+        grid.add(otsi, 2,5);
 
 
         Label nimi = new Label("Õpilase nimi");

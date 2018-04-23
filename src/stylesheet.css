@@ -1,14 +1,36 @@
 .root{
-    -fx-font-size: 16pt;
+    -fx-font-size: 12pt;
     -fx-font-family: "Bernard MT Condensed";
     -fx-background-color: #ffffff;
+    -fx-focus-color: transparent;
 }
-.vbox {
+.vBox {
      -fx-padding: 20;
      -fx-spacing: 30;
+     -fx-font-size: 16pt;
      -fx-alignment: top-center;
      -fx-background-color: #000000;
  }
+.grid-pane {
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+    -fx-alignment: top-left;
+    -fx-padding: 30;
+}
+.combo-box{
+    -fx-background-color: white;
+}
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #e30311;
+}
+.combo-box .list-view .list-cell: selected{
+    -fx-background-color: #e30311;
+}
+
+.toggle-button{
+      -fx-graphic: "search.png"
+}
+
  .label{
     -fx-text-fill: #ffffff;
  }
