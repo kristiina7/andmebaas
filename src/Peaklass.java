@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-public class Kasutajaliides extends Application {
+public class Peaklass extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -36,7 +36,7 @@ public class Kasutajaliides extends Application {
 
         //menüü vasakul
         VBox menüü = new VBox(10);
-        menüü.getStyleClass().add("vBox");
+        menüü.getStyleClass().add("v-box");
         Label otsimine = new Label("Otsi");
         Label lisamine = new Label("Lisa");
         Label aktiivsus = new Label("Aktiivsus"); //rühma põhjal (annab nimekirja ja kohalolud)
@@ -60,6 +60,24 @@ public class Kasutajaliides extends Application {
         otsimine.setOnMouseClicked(event -> {
             Otsing uusOtsi = new Otsing();
             piirid.setCenter(uusOtsi.annaOtsing());
+        });
+
+        //kui vajutada lisa
+        lisamine.setOnMouseClicked(event-> {
+            Lisamine uusLisa = new Lisamine();
+            piirid.setCenter(uusLisa.annaLisamine());
+        });
+
+        //kui vajutada aktiivsus
+        aktiivsus.setOnMouseClicked(event-> {
+            Aktiivsus uusAktiivsus = new Aktiivsus();
+            piirid.setCenter(uusAktiivsus.annaAktiivsus());
+        });
+
+        //kui vajutadas saavutused
+        saavutused.setOnMouseClicked(event-> {
+            Saavutused uusSaavutus = new Saavutused();
+            piirid.setCenter(uusSaavutus.annaSaavutused());
         });
 
         //taust

@@ -4,6 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/*siit kustutab pärast main meetodi ära, praegu lihtsalt selleks, et andmebaasi tööd kontrollida.
+Tegelikult saaks kõik klassid: Aktiivsus, Saavutused, Lisamine, Otsing ka siia panna, sest tegelikult kasutame igast
+klassist ainult ühte meetodit. Lihtsam on orienteeruda, kui on erinevas klassis, aga otseselt vajadust selleks pole.
+*/
 public class Andmebaas {
     public static void main(String[] args) throws SQLException {
         // Ühenduse attribuut Dbf viitab andmebaasi failile.

@@ -1,13 +1,13 @@
 .root{
-    -fx-font-size: 12pt;
+    -fx-font-size: 14pt;
     -fx-font-family: "Bernard MT Condensed";
     -fx-background-color: #ffffff;
     -fx-focus-color: transparent;
 }
-.vBox {
+.v-box {
      -fx-padding: 20;
      -fx-spacing: 30;
-     -fx-font-size: 16pt;
+     -fx-font-size: 18pt;
      -fx-alignment: top-center;
      -fx-background-color: #000000;
  }
@@ -17,10 +17,8 @@
     -fx-alignment: top-left;
     -fx-padding: 30;
 }
-.combo-box{
-    -fx-background-color: white;
-}
-.combo-box-popup .list-view .list-cell:hover {
+
+.combo-box-popup .list-view .list-cell: hover {
     -fx-background-color: #e30311;
 }
 .combo-box .list-view .list-cell: selected{
