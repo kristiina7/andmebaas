@@ -18,7 +18,24 @@ public class Andmebaas{
     }
     public void sulgeConnection() throws SQLException{ //et peameetodis pärast andmebaas sulgeda
         connection.close();
-        }
+    }
+
+    public String sqlÕpilaseAndmed(String nimi) throws SQLException{
+        String[] jupid = nimi.split(" ");
+        String päring = "select * from Õpilased where eesnimi = " + jupid[0] + "and perenimi = " + jupid[1];
+        PreparedStatement õpilaseAndmed = connection.prepareStatement(päring);
+        ResultSet tulemus = õpilaseAndmed.executeQuery();
+
+        String vastus = "Eesnimi: " + tulemus.getString("Eesnimi")+ "\n" +
+                "Perenimi: " + tulemus.getString("Perenimi") + "\n" +
+                "Aadress: " + tulemus.getString("Aadress") + "\n" +
+                "Telefon: " + tulemus.getString("Telefon") + "\n" +
+                "E-mail: " + tulemus.getString("E-mail") + "\n" +
+                "Isikukood: " + tulemus.getString("Isikukood") + "\n" +
+                "Sünnikuupäev: " + tulemus.getString("Sünnikuupäev");
+
+        return vastus;
+    }
 
     //see on praegu ainult andmebaasi katsetamiseks, pärast kustutame ära
     public static void main(String[] args) throws SQLException {
