@@ -1,37 +1,53 @@
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/*siit kustutab pärast main meetodi ära, praegu lihtsalt selleks, et andmebaasi tööd kontrollida.
-Tegelikult saaks kõik klassid: Aktiivsus, Saavutused, Lisamine, Otsing ka siia panna, sest tegelikult kasutame igast
-klassist ainult ühte meetodit. Lihtsam on orienteeruda, kui on erinevas klassis, aga otseselt vajadust selleks pole.
-*/
-public class Andmebaas {
-    public static void main(String[] args) throws SQLException {
-        // Ühenduse attribuut Dbf viitab andmebaasi failile.
-        // uid tähistab kasutajanime ja pwd parooli.
-        Connection connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=dba;pwd=sql;"
-                + "Dbf=C:\\andmebaas\\ope.db");
+//siit kustutab pärast main meetodi ära, praegu lihtsalt selleks, et andmebaasi tööd kontrollida.
 
-        // PreparedStatement tüüpi objektid esitavad SQL lauset andmebaasi jaoks mugaval kujul
-        PreparedStatement stmt = connection.prepareStatement("select Eesnimi, Perenimi from Isikud");
+public class Andmebaas{
+    private Connection connection;
 
-        // ResultSet tüüpi objektid esitavad päringu tulemusi
-        ResultSet rs = stmt.executeQuery();
+    public Andmebaas() throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
 
-        // Meetod ResultSet#next liigutab tulemuses järjehoidjat edasi.
-        while (rs.next()) {
-            // ResultSet'i meetodid getString, getInt jt. võimaldavad küsida
-            // fookuses oleva kirje erinevaid komponente.
-            System.out.println(rs.getString("Eesnimi") + " " + rs.getString("Perenimi"));
+        // Ühenduse attribuut Dbf viitab andmebaasi failile, uid tähistab kasutajanime ja pwd parooli.
+        connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=OSP;pwd=sql;"
+                + "Dbf=OSP.db");
+    }
+    public void sulgeConnection() throws SQLException{ //et peameetodis pärast andmebaas sulgeda
+        connection.close();
         }
 
-        // Peale töö lõpetamist on soovitav objektid sulgeda,
-        // see vabastab teatavad ühenduse ja päringutega seotud andmebaasi ressursid.
-        rs.close();
-        stmt.close();
+    //see on praegu ainult andmebaasi katsetamiseks, pärast kustutame ära
+    public static void main(String[] args) throws SQLException {
+
+        Connection connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=OSP;pwd=sql;"
+                + "Dbf=OSP.db");
+        /*PreparedStatement õpilasteNimed = connection.prepareStatement("select Eesnimi, Perenimi from Õpilased");
+
+        ResultSet tulemus = õpilasteNimed.executeQuery(); //päringu tulemus
+
+        // Meetod ResultSet#next liigutab tulemuses järjehoidjat edasi.
+        while (tulemus.next()) {
+            // ResultSet'i meetodid getString, getInt jt. võimaldavad küsida
+            // fookuses oleva kirje erinevaid komponente.
+            System.out.println(tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi"));
+        }*/
+        PreparedStatement õpilaseAndmed = connection.prepareStatement("select * from Õpilased where eesnimi = 'Amanda' and perenimi = 'Svärd'");
+        ResultSet tulemus2 = õpilaseAndmed.executeQuery();
+
+        while (tulemus2.next()){
+            System.out.println(tulemus2.getString("Eesnimi")+ "\n" + tulemus2.getString("Perenimi") + "\n" +
+            tulemus2.getString("Aadress") + "\n" + tulemus2.getString("Telefon") + "\n" + tulemus2.getString("E-mail") +
+             "\n" + tulemus2.getString("Isikukood") + "\n" + tulemus2.getString("Sünnikuupäev"));
+        }
+
+        //tulemus.close();
+        //õpilasteNimed.close();
+        tulemus2.close();
+        õpilaseAndmed.close();
         connection.close();
     }
 }
