@@ -69,6 +69,7 @@ public class Peaklass extends Application {
                 piirid.setCenter(tegevus.annaOtsing());
             }
             catch (SQLException e){
+                e.printStackTrace();
             }
         });
 
@@ -95,6 +96,6 @@ public class Peaklass extends Application {
 
         pealava.setScene(stseen);
         pealava.show();
-        andmebaas.sulgeConnection(); //kuhu oleks mõistlik see panna?
+        //andmebaas.sulgeConnection(); //kuhu oleks mõistlik see panna?
     }
 }

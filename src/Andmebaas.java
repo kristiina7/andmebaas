@@ -6,6 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 //siit kustutab pärast main meetodi ära, praegu lihtsalt selleks, et andmebaasi tööd kontrollida.
+/*Küsimused:
+Kas saab kuidagi teha nii, et listeneris viskaks sql exceptioni? või pigem teha nii, et kui tuleb exception, siis
+catch osas näiteks visatakse hoiatusaken, et sisend pole korrektne ja lastakse uuesti sisestada
+Kus andmebaas kinni panna? kas terve peameetod try-bloki sisse ja siis selle lõpus finally osas andmebaas kinni? mingi
+while tsükkel?
+Kas praegune klassisüsteem toimib või saaks kuidagi paremini?
+ */
 
 public class Andmebaas{
     private Connection connection;
@@ -21,18 +28,22 @@ public class Andmebaas{
     }
 
     public String sqlÕpilaseAndmed(String nimi) throws SQLException{
-        String[] jupid = nimi.split(" ");
-        String päring = "select * from Õpilased where eesnimi = " + jupid[0] + "and perenimi = " + jupid[1];
-        PreparedStatement õpilaseAndmed = connection.prepareStatement(päring);
+        String[] jupid = nimi.trim().split(" ");
+        String päring = "select * from Õpilased where eesnimi = '" + jupid[0] + "' and perenimi = '" + jupid[1] + "'";
+        PreparedStatement õpilaseAndmed = connection.prepareStatement("select * from Õpilased where eesnimi = '" +
+                jupid[0] + "' and perenimi = '" + jupid[1] + "'");
         ResultSet tulemus = õpilaseAndmed.executeQuery();
 
-        String vastus = "Eesnimi: " + tulemus.getString("Eesnimi")+ "\n" +
-                "Perenimi: " + tulemus.getString("Perenimi") + "\n" +
-                "Aadress: " + tulemus.getString("Aadress") + "\n" +
-                "Telefon: " + tulemus.getString("Telefon") + "\n" +
-                "E-mail: " + tulemus.getString("E-mail") + "\n" +
-                "Isikukood: " + tulemus.getString("Isikukood") + "\n" +
-                "Sünnikuupäev: " + tulemus.getString("Sünnikuupäev");
+        String vastus = "";
+        while (tulemus.next()) {
+                vastus = "Eesnimi: " + tulemus.getString("Eesnimi") + "\n" +
+                    "Perenimi: " + tulemus.getString("Perenimi") + "\n" +
+                    "Aadress: " + tulemus.getString("Aadress") + "\n" +
+                    "Telefon: " + tulemus.getString("Telefon") + "\n" +
+                    "E-mail: " + tulemus.getString("E-mail") + "\n" +
+                    "Isikukood: " + tulemus.getString("Isikukood") + "\n" +
+                    "Sünnikuupäev: " + tulemus.getString("Sünnikuupäev");
+        }
 
         return vastus;
     }
@@ -52,7 +63,14 @@ public class Andmebaas{
             // fookuses oleva kirje erinevaid komponente.
             System.out.println(tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi"));
         }*/
-        PreparedStatement õpilaseAndmed = connection.prepareStatement("select * from Õpilased where eesnimi = 'Amanda' and perenimi = 'Svärd'");
+        String nimi = "Veronika Lehesaar";
+        String[] uus;
+        uus = nimi.split(" ");
+        System.out.println(uus[0] + uus[1]);
+
+        PreparedStatement õpilaseAndmed = connection.prepareStatement("select * from Õpilased where eesnimi = '" + uus[0] +
+                        "' and perenimi = '" + uus[1] + "'");
+
         ResultSet tulemus2 = õpilaseAndmed.executeQuery();
 
         while (tulemus2.next()){

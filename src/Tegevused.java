@@ -52,16 +52,7 @@ public class Tegevused{
                 if (newValue.equals("Õpilane")) {
                     nimi.setText("Õpilase nimi");
                     grid.setRowIndex(otsi, 5);
-
-                    otsi.setOnMouseClicked(event-> {//ta ei tahab SQLExceptioni throwimist, aga ei oska seda kuhugi panna
-                        try{ otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
-                            grid.add(otsinguTulemus, 0, 4);
-                        }
-                        catch (SQLException e) {
-                        }
-                        });
-                    }
-
+                }
                 else if (newValue.equals("Rühm")){
                     nimi.setText("Rühma nimi");
                     grid.setRowIndex(otsi, 5);
@@ -74,8 +65,21 @@ public class Tegevused{
 
                 }
             }});
-        //otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(input[0]));
-        //grid.add(otsinguTulemus, 0, 3);
+
+        otsi.setOnMouseClicked(event-> {//ta ei tahab SQLExceptioni throwimist, aga ei oska seda kuhugi panna
+
+            if (grid.getChildren().contains(otsinguTulemus)) grid.getChildren().remove(otsinguTulemus);
+
+            if (nimi.getText().equals("Õpilase nimi")) {
+                try {
+                    otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
+                    System.out.println(otsinguTulemus);
+                    grid.add(otsinguTulemus, 0, 8);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         return grid;
     }
