@@ -47,6 +47,7 @@ public class Tegevused{
                 if(grid.getChildren().contains(otsitavRühm)){ //juhuks kui enne otsiti trenni ja nüüd midagi muud
                     grid.getChildren().removeAll(otsitavRühm, nimiRühm);
                 }
+                otsitav.setText("");
                 if (grid.getChildren().contains(otsinguTulemus)) grid.getChildren().remove(otsinguTulemus);
 
                 if (newValue.equals("Õpilane")) {
@@ -73,9 +74,17 @@ public class Tegevused{
             if (nimi.getText().equals("Õpilase nimi")) {
                 try {
                     otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
-                    System.out.println(otsinguTulemus);
                     grid.add(otsinguTulemus, 0, 8);
                 } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (nimi.getText().equals("Rühma nimi")){
+                try{
+                    otsinguTulemus.setText(andmebaas.sqlRühmaAndmed(otsitav.getText()));
+                    grid.add(otsinguTulemus, 0, 8);
+                }
+                catch (SQLException e){
                     e.printStackTrace();
                 }
             }

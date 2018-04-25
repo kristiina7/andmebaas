@@ -7,10 +7,10 @@ import java.sql.SQLException;
 
 //siit kustutab pärast main meetodi ära, praegu lihtsalt selleks, et andmebaasi tööd kontrollida.
 /*Küsimused:
-Kas saab kuidagi teha nii, et listeneris viskaks sql exceptioni? või pigem teha nii, et kui tuleb exception, siis
+Kas saab kuidagi teha nii, et eventis viskaks sql exceptioni? või pigem teha nii, et kui tuleb exception, siis
 catch osas näiteks visatakse hoiatusaken, et sisend pole korrektne ja lastakse uuesti sisestada
 Kus andmebaas kinni panna? kas terve peameetod try-bloki sisse ja siis selle lõpus finally osas andmebaas kinni? mingi
-while tsükkel?
+while tsükkel? praegu jääb avatuks
 Kas praegune klassisüsteem toimib või saaks kuidagi paremini?
  */
 
@@ -30,8 +30,7 @@ public class Andmebaas{
     public String sqlÕpilaseAndmed(String nimi) throws SQLException{
         String[] jupid = nimi.trim().split(" ");
         String päring = "select * from Õpilased where eesnimi = '" + jupid[0] + "' and perenimi = '" + jupid[1] + "'";
-        PreparedStatement õpilaseAndmed = connection.prepareStatement("select * from Õpilased where eesnimi = '" +
-                jupid[0] + "' and perenimi = '" + jupid[1] + "'");
+        PreparedStatement õpilaseAndmed = connection.prepareStatement(päring);
         ResultSet tulemus = õpilaseAndmed.executeQuery();
 
         String vastus = "";
@@ -44,9 +43,28 @@ public class Andmebaas{
                     "Isikukood: " + tulemus.getString("Isikukood") + "\n" +
                     "Sünnikuupäev: " + tulemus.getString("Sünnikuupäev");
         }
-
+        tulemus.close();
+        õpilaseAndmed.close();
         return vastus;
     }
+
+    public String sqlRühmaAndmed(String nimi) throws SQLException{
+        String päring = "select Rühmad.nimetus, Õpilased.eesnimi, Õpilased.perenimi from Õpilased, Rühmad, " +
+                "On_rühmas where On_rühmas.rühm_id = Rühmad.rühm_id and On_rühmas.Õpilane_ID = Õpilased.Õpilane_id " +
+                "and rühmad.nimetus = '" + nimi + "'";
+        PreparedStatement rühmaAndmed = connection.prepareStatement(päring);
+        ResultSet tulemus = rühmaAndmed.executeQuery();
+        StringBuilder vastus1 = new StringBuilder();
+        String vastus;
+        while (tulemus.next()){
+            vastus1.append(tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n");
+        }
+        vastus = vastus1.toString();
+        tulemus.close();
+        rühmaAndmed.close();
+        return vastus;
+    }
+
 
     //see on praegu ainult andmebaasi katsetamiseks, pärast kustutame ära
     public static void main(String[] args) throws SQLException {

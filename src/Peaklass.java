@@ -96,6 +96,6 @@ public class Peaklass extends Application {
 
         pealava.setScene(stseen);
         pealava.show();
-        //andmebaas.sulgeConnection(); //kuhu oleks mõistlik see panna?
+        //andmebaas.sulgeConnection(); //tuleb kindlasti kinni panna, aga kudias seda kõige parem teha?
     }
 }
