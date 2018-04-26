@@ -10,7 +10,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-
 import java.sql.SQLException;
 
 public class Tegevused{
@@ -61,6 +60,7 @@ public class Tegevused{
                 }
                 else if (newValue.equals("Trenn")){
                     nimi.setText("Trenni aeg");
+                    otsitav.setPromptText("aaaa-kk-pp");
                     grid.setRowIndex(otsi, 6);
                     grid.add(otsitavRühm, 1, 6);
                     grid.add(nimiRühm, 0,6);
@@ -88,6 +88,15 @@ public class Tegevused{
                     box.getChildren().add(otsinguTulemus);
                 }
                 catch (SQLException e){
+                    e.printStackTrace();
+                    throw new RuntimeException();
+                }
+            }
+            if (nimi.getText().equals("Trenni aeg")) {
+                try {
+                    otsinguTulemus.setText(andmebaas.sqlTrennisOsalejad(otsitav.getText(), otsitavRühm.getText()));
+                    box.getChildren().add(otsinguTulemus);
+                } catch (SQLException e){
                     e.printStackTrace();
                     throw new RuntimeException();
                 }

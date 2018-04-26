@@ -48,6 +48,27 @@ public class Andmebaas{
         return vastus;
     }
 
+    public String sqlTrennisOsalejad(String trenn, String rühm) throws SQLException{
+        String päring = "SELECT Distinct Õpilased.Eesnimi, Õpilased.Perenimi \n" +
+                "from Kohalolu, Õpilased, Trennid, Rühmad, On_rühmas\n" +
+                "where Õpilased.id = Kohalolu.Õpilane_ID \n" +
+                "and Trennid.ID = Kohalolu.Trenn_ID \n" +
+                "and Trennid.Rühm_ID = On_rühmas.Rühm_ID\n" +
+                "and On_rühmas.Rühm_ID = Rühmad.ID\n" +
+                "and Trennid.Toimumisaeg like '" +trenn +  "%'\n" +
+                "and Rühmad.Nimetus = '" + rühm + "'";
+        PreparedStatement TrennisOsalejad = connection.prepareStatement(päring);
+        ResultSet tulemus = TrennisOsalejad.executeQuery();
+        String vastus = "";
+        while (tulemus.next()){
+            vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";
+        }
+        tulemus.close();
+        TrennisOsalejad.close();
+        return vastus;
+
+    }
+
 
     //see on praegu ainult andmebaasi katsetamiseks, pärast kustutame ära
     public static void main(String[] args) throws SQLException {
