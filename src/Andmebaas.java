@@ -35,7 +35,7 @@ public class Andmebaas{
 
     public String sqlRühmaAndmed(String nimi) throws SQLException{
         String päring = "select Rühmad.nimetus, Õpilased.eesnimi, Õpilased.perenimi from Õpilased, Rühmad, " +
-                "On_rühmas where On_rühmas.rühm_id = Rühmad.rühm_id and On_rühmas.Õpilane_ID = Õpilased.Õpilane_id " +
+                "On_rühmas where On_rühmas.rühm_id = Rühmad.ID and On_rühmas.Õpilane_ID = Õpilased.ID " +
                 "and rühmad.nimetus = '" + nimi + "'";
         PreparedStatement rühmaAndmed = connection.prepareStatement(päring);
         ResultSet tulemus = rühmaAndmed.executeQuery();
