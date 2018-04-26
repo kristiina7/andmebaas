@@ -5,25 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-//siit kustutab pärast main meetodi ära, praegu lihtsalt selleks, et andmebaasi tööd kontrollida.
-/*Küsimused:
-Kus andmebaas kinni panna? kas terve peameetod try-bloki sisse ja siis selle lõpus finally osas andmebaas kinni? mingi
-while tsükkel? praegu jääb avatuks
-Kas praegune klassisüsteem toimib või saaks kuidagi paremini?
- */
-
 public class Andmebaas{
     private Connection connection;
 
     public Andmebaas(Connection connection) throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
         this.connection = connection;
-
-        // Ühenduse attribuut Dbf viitab andmebaasi failile, uid tähistab kasutajanime ja pwd parooli.
-        /*connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=OSP;pwd=sql;"
-                + "Dbf=OSP.db");
-    }
-    public void sulgeConnection() throws SQLException{ //et peameetodis pärast andmebaas sulgeda
-        connection.close();*/
     }
 
     public String sqlÕpilaseAndmed(String nimi) throws SQLException{
@@ -53,12 +39,10 @@ public class Andmebaas{
                 "and rühmad.nimetus = '" + nimi + "'";
         PreparedStatement rühmaAndmed = connection.prepareStatement(päring);
         ResultSet tulemus = rühmaAndmed.executeQuery();
-        StringBuilder vastus1 = new StringBuilder();
-        String vastus;
+        String vastus = "";
         while (tulemus.next()){
-            vastus1.append(tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n");
+            vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";
         }
-        vastus = vastus1.toString();
         tulemus.close();
         rühmaAndmed.close();
         return vastus;

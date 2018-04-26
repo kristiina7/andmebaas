@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 import java.sql.SQLException;
 
@@ -19,8 +20,9 @@ public class Tegevused{
 
     }
 
-    public GridPane annaOtsing() throws SQLException{
+    public VBox annaOtsing() throws SQLException{
         GridPane grid = new GridPane();
+        VBox box = new VBox();
         ObservableList<String> otsitavad = FXCollections.observableArrayList("Õpilane", "Rühm", "Trenn");
         ComboBox<String> valikud = new ComboBox<>(otsitavad);
 
@@ -32,8 +34,6 @@ public class Tegevused{
         ToggleButton otsi = new ToggleButton("Otsi");
         grid.add(otsi, 2,5);
 
-        //String[] input = new String[1];
-
         Label nimi = new Label("Õpilase nimi");
         grid.add(nimi, 0, 5);
         grid.add(otsitav, 1, 5);
@@ -41,6 +41,7 @@ public class Tegevused{
         Label nimiRühm = new Label("Rühma nimi"); //trenni otsimiseks
 
         Label otsinguTulemus = new Label();
+        otsinguTulemus.getStyleClass().add("label-vastus");
 
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue){
@@ -66,15 +67,16 @@ public class Tegevused{
 
                 }
             }});
+        box.getChildren().add(grid);
 
-        otsi.setOnMouseClicked(event-> {//ta ei tahab SQLExceptioni throwimist, aga ei oska seda kuhugi panna
+        otsi.setOnMouseClicked(event-> {
 
-            if (grid.getChildren().contains(otsinguTulemus)) grid.getChildren().remove(otsinguTulemus);
+            if (box.getChildren().contains(otsinguTulemus)) box.getChildren().remove(otsinguTulemus);
 
             if (nimi.getText().equals("Õpilase nimi")) {
                 try {
                     otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
-                    grid.add(otsinguTulemus, 0, 8);
+                    box.getChildren().add(otsinguTulemus);
                 } catch (SQLException e){
                     e.printStackTrace();
                     throw new RuntimeException();
@@ -83,7 +85,7 @@ public class Tegevused{
             if (nimi.getText().equals("Rühma nimi")){
                 try{
                     otsinguTulemus.setText(andmebaas.sqlRühmaAndmed(otsitav.getText()));
-                    grid.add(otsinguTulemus, 0, 8);
+                    box.getChildren().add(otsinguTulemus);
                 }
                 catch (SQLException e){
                     e.printStackTrace();
@@ -92,10 +94,12 @@ public class Tegevused{
             }
         });
 
-        return grid;
+
+        return box;
     }
 
-    public GridPane annaSaavutused(){
+    public VBox annaSaavutused(){
+        VBox box = new VBox();
         GridPane grid = new GridPane();
         ObservableList<String> valitavad = FXCollections.observableArrayList("2017/18", "2016/17", "2015/16");
         ComboBox<String> valikud = new ComboBox<>(valitavad);
@@ -112,7 +116,7 @@ public class Tegevused{
 
             }
         });
-        return grid;
+        return box;
     }
 
     public GridPane annaLisamine() {
@@ -135,7 +139,8 @@ public class Tegevused{
 
         return grid;
     }
-    public GridPane annaAktiivsus(){
+    public VBox annaAktiivsus(){
+        VBox box = new VBox();
         GridPane grid = new GridPane();
 
         grid.getStyleClass().add("grid-pane");
@@ -146,7 +151,7 @@ public class Tegevused{
         ToggleButton otsi = new ToggleButton("Otsi");
         grid.add(otsi, 2, 0);
 
-        return grid;
+        return box;
 }
 
 }

@@ -94,7 +94,7 @@ public class Peaklass extends Application{
             StackPane stack = new StackPane();
             stack.getChildren().addAll(taust, piirid);
 
-        pealava.setOnCloseRequest(event -> {
+        pealava.setOnCloseRequest(event -> { //andmebaasi sulgemine
             try{
                 connection.close();
             }
