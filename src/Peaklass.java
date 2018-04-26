@@ -15,9 +15,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Peaklass extends Application {
+public class Peaklass extends Application{
 
     public static void main(String[] args) {
         launch(args);
@@ -57,45 +59,56 @@ public class Peaklass extends Application {
         aktiivsus.setOnMouseExited(event -> {aktiivsus.getStyleClass().clear(); aktiivsus.getStyleClass().add("label");});
         saavutused.setOnMouseExited(event -> {saavutused.getStyleClass().clear(); saavutused.getStyleClass().add("label");});
 
-        //andmebaas
-        Andmebaas andmebaas = new Andmebaas();
 
-        Tegevused tegevus = new Tegevused(andmebaas);
+        Connection connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=OSP;pwd=sql;"
+                + "Dbf=OSP.db");
+            //andmebaas
+            // Ühenduse attribuut Dbf viitab andmebaasi failile, uid tähistab kasutajanime ja pwd parooli.
+            Andmebaas andmebaas = new Andmebaas(connection);
 
-        //kui vajutada otsing
-        //otsimine.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaOtsing())); //kas saab kuidagi nii, et laseks exceptioni throwida?
-        otsimine.setOnMouseClicked(event ->{
-            try {
-                piirid.setCenter(tegevus.annaOtsing());
+            Tegevused tegevus = new Tegevused(andmebaas);
+
+            otsimine.setOnMouseClicked(event -> { //pärast enteriga event ka juurde
+                try {
+                    piirid.setCenter(tegevus.annaOtsing());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException();
+                }
+            });
+
+            //kui vajutada lisa
+            lisamine.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaLisamine()));
+
+            //kui vajutada aktiivsus
+            aktiivsus.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaAktiivsus()));
+
+            //kui vajutadas saavutused
+            saavutused.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaSaavutused()));
+
+            //taust
+            StackPane taust = new StackPane();
+            taust.setId("pane");
+
+            //taust ja borderpane
+            StackPane stack = new StackPane();
+            stack.getChildren().addAll(taust, piirid);
+
+        pealava.setOnCloseRequest(event -> { //andmebaasi sulgemine
+            try{
+                connection.close();
             }
             catch (SQLException e){
-                e.printStackTrace();
+                throw new RuntimeException();
             }
         });
 
-        //kui vajutada lisa
-        lisamine.setOnMouseClicked(event-> piirid.setCenter(tegevus.annaLisamine()));
 
-        //kui vajutada aktiivsus
-        aktiivsus.setOnMouseClicked(event-> piirid.setCenter(tegevus.annaAktiivsus()));
+            Scene stseen = new Scene(stack, 800, 500);
+            stseen.getStylesheets().addAll(getClass().getResource("stylesheet.css").toExternalForm()); //stiilid
 
-        //kui vajutadas saavutused
-        saavutused.setOnMouseClicked(event-> piirid.setCenter(tegevus.annaSaavutused()));
+            pealava.setScene(stseen);
+            pealava.show();
 
-        //taust
-        StackPane taust = new StackPane();
-        taust.setId("pane");
-
-        //taust ja borderpane
-        StackPane stack = new StackPane();
-        stack.getChildren().addAll(taust, piirid);
-
-
-        Scene stseen = new Scene(stack, 800, 500);
-        stseen.getStylesheets().addAll(getClass().getResource("stylesheet.css").toExternalForm()); //stiilid
-
-        pealava.setScene(stseen);
-        pealava.show();
-        //andmebaas.sulgeConnection(); //tuleb kindlasti kinni panna, aga kudias seda kõige parem teha?
     }
 }
