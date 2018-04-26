@@ -75,8 +75,9 @@ public class Tegevused{
                 try {
                     otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
                     grid.add(otsinguTulemus, 0, 8);
-                } catch (SQLException e) {
+                } catch (SQLException e){
                     e.printStackTrace();
+                    throw new RuntimeException();
                 }
             }
             if (nimi.getText().equals("Rühma nimi")){
@@ -86,6 +87,7 @@ public class Tegevused{
                 }
                 catch (SQLException e){
                     e.printStackTrace();
+                    throw new RuntimeException();
                 }
             }
         });

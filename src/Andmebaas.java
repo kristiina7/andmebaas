@@ -7,8 +7,6 @@ import java.sql.SQLException;
 
 //siit kustutab pärast main meetodi ära, praegu lihtsalt selleks, et andmebaasi tööd kontrollida.
 /*Küsimused:
-Kas saab kuidagi teha nii, et eventis viskaks sql exceptioni? või pigem teha nii, et kui tuleb exception, siis
-catch osas näiteks visatakse hoiatusaken, et sisend pole korrektne ja lastakse uuesti sisestada
 Kus andmebaas kinni panna? kas terve peameetod try-bloki sisse ja siis selle lõpus finally osas andmebaas kinni? mingi
 while tsükkel? praegu jääb avatuks
 Kas praegune klassisüsteem toimib või saaks kuidagi paremini?
@@ -17,14 +15,15 @@ Kas praegune klassisüsteem toimib või saaks kuidagi paremini?
 public class Andmebaas{
     private Connection connection;
 
-    public Andmebaas() throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
+    public Andmebaas(Connection connection) throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
+        this.connection = connection;
 
         // Ühenduse attribuut Dbf viitab andmebaasi failile, uid tähistab kasutajanime ja pwd parooli.
-        connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=OSP;pwd=sql;"
+        /*connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=OSP;pwd=sql;"
                 + "Dbf=OSP.db");
     }
     public void sulgeConnection() throws SQLException{ //et peameetodis pärast andmebaas sulgeda
-        connection.close();
+        connection.close();*/
     }
 
     public String sqlÕpilaseAndmed(String nimi) throws SQLException{
