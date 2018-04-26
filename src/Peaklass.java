@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.sql.SQLException;
 
 public class Peaklass extends Application {
 
@@ -23,7 +24,7 @@ public class Peaklass extends Application {
     }
 
     @Override
-    public void start(Stage pealava) {
+    public void start(Stage pealava) throws SQLException{
         BorderPane piirid = new BorderPane(); //üldine paigutus
 
         //logo
@@ -56,29 +57,30 @@ public class Peaklass extends Application {
         aktiivsus.setOnMouseExited(event -> {aktiivsus.getStyleClass().clear(); aktiivsus.getStyleClass().add("label");});
         saavutused.setOnMouseExited(event -> {saavutused.getStyleClass().clear(); saavutused.getStyleClass().add("label");});
 
+        //andmebaas
+        Andmebaas andmebaas = new Andmebaas();
+
+        Tegevused tegevus = new Tegevused(andmebaas);
+
         //kui vajutada otsing
-        otsimine.setOnMouseClicked(event -> {
-            Otsing uusOtsi = new Otsing();
-            piirid.setCenter(uusOtsi.annaOtsing());
+        //otsimine.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaOtsing())); //kas saab kuidagi nii, et laseks exceptioni throwida?
+        otsimine.setOnMouseClicked(event ->{
+            try {
+                piirid.setCenter(tegevus.annaOtsing());
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+            }
         });
 
         //kui vajutada lisa
-        lisamine.setOnMouseClicked(event-> {
-            Lisamine uusLisa = new Lisamine();
-            piirid.setCenter(uusLisa.annaLisamine());
-        });
+        lisamine.setOnMouseClicked(event-> piirid.setCenter(tegevus.annaLisamine()));
 
         //kui vajutada aktiivsus
-        aktiivsus.setOnMouseClicked(event-> {
-            Aktiivsus uusAktiivsus = new Aktiivsus();
-            piirid.setCenter(uusAktiivsus.annaAktiivsus());
-        });
+        aktiivsus.setOnMouseClicked(event-> piirid.setCenter(tegevus.annaAktiivsus()));
 
         //kui vajutadas saavutused
-        saavutused.setOnMouseClicked(event-> {
-            Saavutused uusSaavutus = new Saavutused();
-            piirid.setCenter(uusSaavutus.annaSaavutused());
-        });
+        saavutused.setOnMouseClicked(event-> piirid.setCenter(tegevus.annaSaavutused()));
 
         //taust
         StackPane taust = new StackPane();
@@ -88,10 +90,12 @@ public class Peaklass extends Application {
         StackPane stack = new StackPane();
         stack.getChildren().addAll(taust, piirid);
 
+
         Scene stseen = new Scene(stack, 800, 500);
         stseen.getStylesheets().addAll(getClass().getResource("stylesheet.css").toExternalForm()); //stiilid
 
         pealava.setScene(stseen);
         pealava.show();
+        //andmebaas.sulgeConnection(); //tuleb kindlasti kinni panna, aga kudias seda kõige parem teha?
     }
 }

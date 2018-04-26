@@ -2,15 +2,24 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
-public class Tegevused {
+import java.sql.SQLException;
 
-    public GridPane annaOtsing(){
+public class Tegevused{
+    private Andmebaas andmebaas;
+    public Tegevused(Andmebaas andmebaas){
+        this.andmebaas = andmebaas;
+
+    }
+
+    public GridPane annaOtsing() throws SQLException{
         GridPane grid = new GridPane();
         ObservableList<String> otsitavad = FXCollections.observableArrayList("Õpilane", "Rühm", "Trenn");
         ComboBox<String> valikud = new ComboBox<>(otsitavad);
@@ -23,6 +32,7 @@ public class Tegevused {
         ToggleButton otsi = new ToggleButton("Otsi");
         grid.add(otsi, 2,5);
 
+        //String[] input = new String[1];
 
         Label nimi = new Label("Õpilase nimi");
         grid.add(nimi, 0, 5);
@@ -31,20 +41,18 @@ public class Tegevused {
         Label nimiRühm = new Label("Rühma nimi"); //trenni otsimiseks
 
         Label otsinguTulemus = new Label();
-        StringBuilder päring = new StringBuilder();
 
-
-        valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
+        valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
+            public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue){
                 if(grid.getChildren().contains(otsitavRühm)){ //juhuks kui enne otsiti trenni ja nüüd midagi muud
                     grid.getChildren().removeAll(otsitavRühm, nimiRühm);
                 }
+                otsitav.setText("");
+                if (grid.getChildren().contains(otsinguTulemus)) grid.getChildren().remove(otsinguTulemus);
 
-                if (newValue.equals("Õpilane")){
+                if (newValue.equals("Õpilane")) {
                     nimi.setText("Õpilase nimi");
                     grid.setRowIndex(otsi, 5);
-                    //otsi.setOnMouseClicked(event-> ); //siia tuleb select päring
-
                 }
                 else if (newValue.equals("Rühm")){
                     nimi.setText("Rühma nimi");
@@ -58,6 +66,29 @@ public class Tegevused {
 
                 }
             }});
+
+        otsi.setOnMouseClicked(event-> {//ta ei tahab SQLExceptioni throwimist, aga ei oska seda kuhugi panna
+
+            if (grid.getChildren().contains(otsinguTulemus)) grid.getChildren().remove(otsinguTulemus);
+
+            if (nimi.getText().equals("Õpilase nimi")) {
+                try {
+                    otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
+                    grid.add(otsinguTulemus, 0, 8);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (nimi.getText().equals("Rühma nimi")){
+                try{
+                    otsinguTulemus.setText(andmebaas.sqlRühmaAndmed(otsitav.getText()));
+                    grid.add(otsinguTulemus, 0, 8);
+                }
+                catch (SQLException e){
+                    e.printStackTrace();
+                }
+            }
+        });
 
         return grid;
     }
