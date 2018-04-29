@@ -4,40 +4,67 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Andmebaas{
     private Connection connection;
+    private ResultSet tulemus;
+    private String vastus = "";
+    private List<String> elemendid= new ArrayList<>();
+
 
     public Andmebaas(Connection connection) throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
         this.connection = connection;
+    }
+    public void korduv(String päring, List<String> kuvamine, boolean reas) throws SQLException{
+        PreparedStatement Andmed = connection.prepareStatement(päring);
+        tulemus = Andmed.executeQuery();
+        vastus = "";
+        while (tulemus.next()) {
+            if (reas) {
+                for (String el : kuvamine) {
+                    vastus = vastus + el + ": " + tulemus.getString(el) + "\n";
+                }
+            }
+            else{
+                    vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";
+            }
+        }
+        elemendid.clear();
+        tulemus.close();
+        Andmed.close();
+
     }
 
     public String sqlÕpilaseAndmed(String nimi) throws SQLException{
         String[] jupid = nimi.trim().split(" ");
         String päring = "select * from Õpilased where eesnimi = '" + jupid[0] + "' and perenimi = '" + jupid[1] + "'";
-        PreparedStatement õpilaseAndmed = connection.prepareStatement(päring);
-        ResultSet tulemus = õpilaseAndmed.executeQuery();
+        Collections.addAll(elemendid, "Eesnimi", "Perenimi", "Aadress", "Telefon", "E-Mail", "isikukood", "Sünnikuupäev");
 
-        String vastus = "";
+        korduv(päring, elemendid, true);
+/*
+        PreparedStatement õpilaseAndmed = connection.prepareStatement(päring);
+        tulemus = õpilaseAndmed.executeQuery();
+        vastus = "";
         while (tulemus.next()) {
-                vastus = "Eesnimi: " + tulemus.getString("Eesnimi") + "\n" +
-                    "Perenimi: " + tulemus.getString("Perenimi") + "\n" +
-                    "Aadress: " + tulemus.getString("Aadress") + "\n" +
-                    "Telefon: " + tulemus.getString("Telefon") + "\n" +
-                    "E-mail: " + tulemus.getString("E-mail") + "\n" +
-                    "Isikukood: " + tulemus.getString("Isikukood") + "\n" +
-                    "Sünnikuupäev: " + tulemus.getString("Sünnikuupäev");
-        }
+                vastus = vastus + "Eesnimi" + tulemus.getString("Eesnimi") + "\n";
+            }
+
         tulemus.close();
         õpilaseAndmed.close();
-        return vastus;
+
+  */      return vastus;
     }
 
     public String sqlRühmaAndmed(String nimi) throws SQLException{
         String päring = "select Rühmad.nimetus, Õpilased.eesnimi, Õpilased.perenimi from Õpilased, Rühmad, " +
                 "On_rühmas where On_rühmas.rühm_id = Rühmad.ID and On_rühmas.Õpilane_ID = Õpilased.ID " +
                 "and rühmad.nimetus = '" + nimi + "'";
-        PreparedStatement rühmaAndmed = connection.prepareStatement(päring);
+        Collections.addAll(elemendid, "Eesnimi", "Perenimi");
+        korduv(päring, elemendid, false);
+        /*PreparedStatement rühmaAndmed = connection.prepareStatement(päring);
         ResultSet tulemus = rühmaAndmed.executeQuery();
         String vastus = "";
         while (tulemus.next()){
@@ -45,7 +72,7 @@ public class Andmebaas{
         }
         tulemus.close();
         rühmaAndmed.close();
-        return vastus;
+        */return vastus;
     }
 
     public String sqlTrennisOsalejad(String trenn, String rühm) throws SQLException{
@@ -57,7 +84,7 @@ public class Andmebaas{
                 "and On_rühmas.Rühm_ID = Rühmad.ID\n" +
                 "and Trennid.Toimumisaeg like '" +trenn +  "%'\n" +
                 "and Rühmad.Nimetus = '" + rühm + "'";
-        PreparedStatement TrennisOsalejad = connection.prepareStatement(päring);
+        /*PreparedStatement TrennisOsalejad = connection.prepareStatement(päring);
         ResultSet tulemus = TrennisOsalejad.executeQuery();
         String vastus = "";
         while (tulemus.next()){
@@ -65,6 +92,9 @@ public class Andmebaas{
         }
         tulemus.close();
         TrennisOsalejad.close();
+        */
+        Collections.addAll(elemendid, "Eesnimi", "Perenimi");
+        korduv(päring, elemendid, false);
         return vastus;
 
     }
