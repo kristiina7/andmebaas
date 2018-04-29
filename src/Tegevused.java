@@ -10,7 +10,9 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+
 
 public class Tegevused{
     private Andmebaas andmebaas;
@@ -30,6 +32,7 @@ public class Tegevused{
         grid.getStyleClass().add("grid-pane");
         grid.add(valikud, 0, 0);
         TextField otsitav = new TextField();
+        otsitav.setPromptText("Eesnimi Perenimi");
         ToggleButton otsi = new ToggleButton("Otsi");
         grid.add(otsi, 2,5);
 
@@ -37,6 +40,7 @@ public class Tegevused{
         grid.add(nimi, 0, 5);
         grid.add(otsitav, 1, 5);
         TextField otsitavRühm = new TextField(); //trenni otsimiseks
+        otsitavRühm.setPromptText("Nimi");
         Label nimiRühm = new Label("Rühma nimi"); //trenni otsimiseks
 
         Label otsinguTulemus = new Label();
@@ -52,10 +56,12 @@ public class Tegevused{
 
                 if (newValue.equals("Õpilane")) {
                     nimi.setText("Õpilase nimi");
+                    otsitav.setPromptText("Eesnimi Perenimi");
                     grid.setRowIndex(otsi, 5);
                 }
                 else if (newValue.equals("Rühm")){
                     nimi.setText("Rühma nimi");
+                    otsitav.setPromptText("Nimi");
                     grid.setRowIndex(otsi, 5);
                 }
                 else if (newValue.equals("Trenn")){

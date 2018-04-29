@@ -19,7 +19,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Peaklass extends Application{
+public class Peaklass extends Application{ //trenni nupul hall tekst jääb teistele taustaks
 
     public static void main(String[] args) {
         launch(args);
