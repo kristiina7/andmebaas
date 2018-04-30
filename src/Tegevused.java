@@ -116,21 +116,38 @@ public class Tegevused{
     public VBox annaSaavutused(){
         VBox box = new VBox();
         GridPane grid = new GridPane();
-        ObservableList<String> valitavad = FXCollections.observableArrayList("2017/18", "2016/17", "2015/16");
+        ObservableList<String> valitavad = FXCollections.observableArrayList("2018", "2017", "2016");
         ComboBox<String> valikud = new ComboBox<>(valitavad);
-        Label hooaeg = new Label("Hooaeg");
+        Label aasta = new Label("Aasta");
 
         grid.getStyleClass().add("grid-pane");
         valikud.getStyleClass().add("combo-box");
         valikud.getSelectionModel().select(0); //alguses on ees praeguse hooaja andmed
-        grid.add(hooaeg, 0, 0);
+        grid.add(aasta, 0, 0);
         grid.add(valikud,1,0);
+
+        Label tulemus = new Label();
+        tulemus.getStyleClass().add("label-vastus");
+
+        try{
+            tulemus.setText(andmebaas.sqlSaavutused(2018));
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
 
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
-
+                try{
+                    tulemus.setText(andmebaas.sqlSaavutused(Integer.parseInt(newValue)));
+                }
+                catch (SQLException e){
+                    throw new RuntimeException();
+                }
             }
         });
+        box.getChildren().addAll(grid, tulemus);
         return box;
     }
 

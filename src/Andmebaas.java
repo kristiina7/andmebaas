@@ -99,6 +99,13 @@ public class Andmebaas{
 
     }
 
+    public String sqlSaavutused(int aasta) throws SQLException{
+        String päring = "select * from võistlused where year(aeg) = " + aasta;
+        Collections.addAll(elemendid, "Nimi", "Asukoht", "Aeg");
+        korduv(päring, elemendid, true);
+        return vastus;
+    }
+
 
     //see on praegu ainult andmebaasi katsetamiseks, pärast kustutame ära
     public static void main(String[] args) throws SQLException {
