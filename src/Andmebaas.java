@@ -24,8 +24,12 @@ public class Andmebaas{
         vastus = "";
         while (tulemus.next()) {
             if (reas) {
-                for (String el : kuvamine) {
-                    vastus = vastus + el + ": " + tulemus.getString(el) + "\n";
+                for (int i = 0; i < elemendid.size(); i++) { //et tekiks vahed erinevate tulemuste vahel
+                    for (String el : kuvamine) {
+
+                        vastus = vastus + el + ": " + tulemus.getString(el) + "\n";
+                    }
+                    vastus = vastus + "\n";
                 }
             }
             else{
@@ -100,8 +104,11 @@ public class Andmebaas{
     }
 
     public String sqlSaavutused(int aasta) throws SQLException{
-        String päring = "select * from võistlused where year(aeg) = " + aasta;
-        Collections.addAll(elemendid, "Nimi", "Asukoht", "Aeg");
+        String päring = "select nimi, aeg, asukoht, saavutatud_tulemus as Tulemus, nimetus\n" +
+                "from võistlused, võistleb, rühmad \n" +
+                "where võistleb.rühm_id = rühmad.id and võistleb.võistlus_id = võistlused.id\n" +
+                "and year(võistlused.aeg) = " + aasta;
+        Collections.addAll(elemendid, "Nimi", "Asukoht", "Aeg", "Nimetus", "Tulemus");
         korduv(päring, elemendid, true);
         return vastus;
     }
