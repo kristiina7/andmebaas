@@ -46,18 +46,7 @@ public class Andmebaas{
         Collections.addAll(elemendid, "Eesnimi", "Perenimi", "Aadress", "Telefon", "E-Mail", "isikukood", "Sünnikuupäev");
 
         korduv(päring, elemendid, true);
-/*
-        PreparedStatement õpilaseAndmed = connection.prepareStatement(päring);
-        tulemus = õpilaseAndmed.executeQuery();
-        vastus = "";
-        while (tulemus.next()) {
-                vastus = vastus + "Eesnimi" + tulemus.getString("Eesnimi") + "\n";
-            }
-
-        tulemus.close();
-        õpilaseAndmed.close();
-
-  */      return vastus;
+        return vastus;
     }
 
     public String sqlRühmaAndmed(String nimi) throws SQLException{
@@ -66,15 +55,7 @@ public class Andmebaas{
                 "and rühmad.nimetus = '" + nimi + "'";
         Collections.addAll(elemendid, "Eesnimi", "Perenimi");
         korduv(päring, elemendid, false);
-        /*PreparedStatement rühmaAndmed = connection.prepareStatement(päring);
-        ResultSet tulemus = rühmaAndmed.executeQuery();
-        String vastus = "";
-        while (tulemus.next()){
-            vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";
-        }
-        tulemus.close();
-        rühmaAndmed.close();
-        */return vastus;
+        return vastus;
     }
 
     public String sqlTrennisOsalejad(String trenn, String rühm) throws SQLException{
@@ -86,67 +67,39 @@ public class Andmebaas{
                 "and On_rühmas.Rühm_ID = Rühmad.ID\n" +
                 "and Trennid.Toimumisaeg like '" +trenn +  "%'\n" +
                 "and Rühmad.Nimetus = '" + rühm + "'";
-        /*PreparedStatement TrennisOsalejad = connection.prepareStatement(päring);
-        ResultSet tulemus = TrennisOsalejad.executeQuery();
-        String vastus = "";
-        while (tulemus.next()){
-            vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";
-        }
-        tulemus.close();
-        TrennisOsalejad.close();
-        */
+
         Collections.addAll(elemendid, "Eesnimi", "Perenimi");
         korduv(päring, elemendid, false);
         return vastus;
-
     }
 
     public String sqlSaavutused(int aasta) throws SQLException{
-        String päring = "select nimi, aeg, asukoht, saavutatud_tulemus as Tulemus, nimetus\n" +
+        String päring = "select nimi, aeg, asukoht, saavutatud_tulemus as Tulemus, nimetus as Rühm\n" +
                 "from võistlused, võistleb, rühmad \n" +
                 "where võistleb.rühm_id = rühmad.id and võistleb.võistlus_id = võistlused.id\n" +
                 "and year(võistlused.aeg) = " + aasta;
-        Collections.addAll(elemendid, "Nimi", "Asukoht", "Aeg", "Nimetus", "Tulemus");
+        Collections.addAll(elemendid, "Nimi", "Asukoht", "Aeg", "Rühm", "Tulemus");
         korduv(päring, elemendid, true);
         return vastus;
     }
 
-
-    //see on praegu ainult andmebaasi katsetamiseks, pärast kustutame ära
-    public static void main(String[] args) throws SQLException {
-
-        Connection connection = DriverManager.getConnection("jdbc:sqlanywhere:uid=OSP;pwd=sql;"
-                + "Dbf=OSP.db");
-        /*PreparedStatement õpilasteNimed = connection.prepareStatement("select Eesnimi, Perenimi from Õpilased");
-
-        ResultSet tulemus = õpilasteNimed.executeQuery(); //päringu tulemus
-
-        // Meetod ResultSet#next liigutab tulemuses järjehoidjat edasi.
-        while (tulemus.next()) {
-            // ResultSet'i meetodid getString, getInt jt. võimaldavad küsida
-            // fookuses oleva kirje erinevaid komponente.
-            System.out.println(tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi"));
-        }*/
-        String nimi = "Veronika Lehesaar";
-        String[] uus;
-        uus = nimi.split(" ");
-        System.out.println(uus[0] + uus[1]);
-
-        PreparedStatement õpilaseAndmed = connection.prepareStatement("select * from Õpilased where eesnimi = '" + uus[0] +
-                        "' and perenimi = '" + uus[1] + "'");
-
-        ResultSet tulemus2 = õpilaseAndmed.executeQuery();
-
-        while (tulemus2.next()){
-            System.out.println(tulemus2.getString("Eesnimi")+ "\n" + tulemus2.getString("Perenimi") + "\n" +
-            tulemus2.getString("Aadress") + "\n" + tulemus2.getString("Telefon") + "\n" + tulemus2.getString("E-mail") +
-             "\n" + tulemus2.getString("Isikukood") + "\n" + tulemus2.getString("Sünnikuupäev"));
+    public List<String> sqlRühmad()throws SQLException{
+        String päring = "select nimetus from rühmad";
+        List<String> vastused = new ArrayList<>();
+        PreparedStatement TrennisOsalejad = connection.prepareStatement(päring);
+        ResultSet tulemus = TrennisOsalejad.executeQuery();
+        while (tulemus.next()){
+            vastused.add(tulemus.getString("Nimetus"));
         }
+        return vastused;
+    }
 
-        //tulemus.close();
-        //õpilasteNimed.close();
-        tulemus2.close();
-        õpilaseAndmed.close();
-        connection.close();
+    public String sqlAktiivsus(String rühm) throws SQLException{
+        String päring = "select eesnimi + ' ' + perenimi as Nimi, count() as Trenne from Õpilased, Kohalolu, Trennid, Rühmad\n" +
+                "where Õpilased.ID = Kohalolu.Õpilane_ID and Kohalolu.Trenn_ID = Trennid.ID\n" +
+                "and Trennid.Rühm_ID = Rühmad.ID and Rühmad.Nimetus = '" + rühm + "' group by eesnimi, perenimi order by nimi asc";
+        Collections.addAll(elemendid, "Nimi", "Trenne");
+        korduv(päring, elemendid, true);
+        return vastus;
     }
 }

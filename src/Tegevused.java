@@ -2,21 +2,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 
 
@@ -24,10 +15,9 @@ public class Tegevused{
     private Andmebaas andmebaas;
     public Tegevused(Andmebaas andmebaas){
         this.andmebaas = andmebaas;
-
     }
 
-    public VBox annaOtsing() throws SQLException{
+    public VBox annaOtsing(){
         GridPane grid = new GridPane();
         VBox box = new VBox();
         ObservableList<String> otsitavad = FXCollections.observableArrayList("Õpilane", "Rühm", "Trenn");
@@ -119,7 +109,7 @@ public class Tegevused{
         return box;
     }
 
-    public VBox annaSaavutused(){
+    public VBox annaSaavutused() throws SQLException{
         VBox box = new VBox();
         GridPane grid = new GridPane();
         ObservableList<String> valitavad = FXCollections.observableArrayList("2018", "2017", "2016");
@@ -132,24 +122,15 @@ public class Tegevused{
         grid.add(aasta, 0, 0);
         grid.add(valikud,1,0);
 
-        ScrollBar sc = new ScrollBar();
-        sc.setOrientation(Orientation.VERTICAL);
         Label tulemus = new Label();
         tulemus.getStyleClass().add("label-vastus");
 
-        try{
-            tulemus.setText(andmebaas.sqlSaavutused(2018));
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+        tulemus.setText(andmebaas.sqlSaavutused(2018));
 
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
                 try{
                     tulemus.setText(andmebaas.sqlSaavutused(Integer.parseInt(newValue)));
-                    //tekst.append(andmebaas.sqlSaavutused(Integer.parseInt(newValue)));
                 }
                 catch (SQLException e){
                     throw new RuntimeException();
@@ -183,17 +164,36 @@ public class Tegevused{
 
         return grid;
     }
-    public VBox annaAktiivsus(){
+    public VBox annaAktiivsus() throws SQLException{
         VBox box = new VBox();
         GridPane grid = new GridPane();
 
+        ObservableList<String> otsitavad = FXCollections.observableArrayList(andmebaas.sqlRühmad());
+        ComboBox<String> valikud = new ComboBox<>(otsitavad);
+        valikud.getStyleClass().add("combo-box");
+        valikud.getSelectionModel().select(0); //valib automaatselt alguses esimese
+
+        Label nimi = new Label("Rühm");
         grid.getStyleClass().add("grid-pane");
-        TextField rühm = new TextField();
-        Label nimetus = new Label("Rühma nimi");
-        grid.add(nimetus, 0, 0);
-        grid.add(rühm, 1, 0);
-        ToggleButton otsi = new ToggleButton("Otsi");
-        grid.add(otsi, 2, 0);
+        grid.add(nimi, 0, 0);
+        grid.add(valikud, 1, 0);
+        Label tulemus = new Label();
+        tulemus.getStyleClass().add("label-vastus");
+        tulemus.setText(andmebaas.sqlAktiivsus(valikud.getValue()));
+
+        valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
+            public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue){
+                try{
+                    tulemus.setText(andmebaas.sqlAktiivsus(valikud.getValue()));
+                }
+                catch(SQLException e){
+                    throw new RuntimeException();
+                }
+
+            }});
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(tulemus);
+        box.getChildren().addAll(grid, scroll);
 
         return box;
 }

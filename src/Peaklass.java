@@ -19,7 +19,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Peaklass extends Application{ //trenni nupul hall tekst jääb teistele taustaks
+public class Peaklass extends Application{
 
     public static void main(String[] args) {
         launch(args);
@@ -68,23 +68,30 @@ public class Peaklass extends Application{ //trenni nupul hall tekst jääb teis
 
             Tegevused tegevus = new Tegevused(andmebaas);
 
-            otsimine.setOnMouseClicked(event -> { //pärast enteriga event ka juurde
-                try {
-                    piirid.setCenter(tegevus.annaOtsing());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException();
-                }
-            });
+            //kui vajutada otsi
+            otsimine.setOnMouseClicked(event ->  piirid.setCenter(tegevus.annaOtsing()));
 
             //kui vajutada lisa
             lisamine.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaLisamine()));
 
             //kui vajutada aktiivsus
-            aktiivsus.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaAktiivsus()));
+            aktiivsus.setOnMouseClicked(event -> {
+                try{
+                    piirid.setCenter(tegevus.annaAktiivsus());
+                }
+                catch (SQLException e){
+                    throw new RuntimeException();
+                }
+            });
 
             //kui vajutadas saavutused
-            saavutused.setOnMouseClicked(event -> piirid.setCenter(tegevus.annaSaavutused()));
+            saavutused.setOnMouseClicked(event -> {
+                try{piirid.setCenter(tegevus.annaSaavutused());
+                }
+                catch (SQLException e){
+                    throw new RuntimeException();
+                }
+            });
 
             //taust
             StackPane taust = new StackPane();
