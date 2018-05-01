@@ -97,7 +97,7 @@ public class Andmebaas{
     public String sqlAktiivsus(String rühm) throws SQLException{
         String päring = "select eesnimi + ' ' + perenimi as Nimi, count() as Trenne from Õpilased, Kohalolu, Trennid, Rühmad\n" +
                 "where Õpilased.ID = Kohalolu.Õpilane_ID and Kohalolu.Trenn_ID = Trennid.ID\n" +
-                "and Trennid.Rühm_ID = Rühmad.ID and Rühmad.Nimetus = '" + rühm + "' group by eesnimi, perenimi order by nimi asc";
+                "and Trennid.Rühm_ID = Rühmad.ID and Rühmad.Nimetus = '" + rühm + "' group by eesnimi, perenimi order by Trenne desc";
         Collections.addAll(elemendid, "Nimi", "Trenne");
         korduv(päring, elemendid, true);
         return vastus;

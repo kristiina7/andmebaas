@@ -144,6 +144,7 @@ public class Tegevused{
         return box;
     }
 
+
     public GridPane annaLisamine() {
         GridPane grid = new GridPane();
         ObservableList<String> valitavad = FXCollections.observableArrayList("Trenn", "Õpilane", "Võistlus");
@@ -156,9 +157,72 @@ public class Tegevused{
         grid.add(keda, 0, 0);
         grid.add(valikud, 1, 0);
 
+        Label esimene = new Label("Toimumisaeg");
+        TextField sisse_esimene = new TextField();
+        grid.add(sisse_esimene, 1, 5);
+        grid.add(esimene, 0, 5);
+        sisse_esimene.setPromptText("aaaa-kk-pp tt:mm");
+        Label teine = new Label("Rühm");
+        TextField sisse_teine = new TextField();
+        grid.add(sisse_teine, 1, 6);
+        grid.add(teine, 0, 6);
+        Label kolmas = new Label("Asukoht");
+        TextField sisse_kolmas = new TextField();
+        grid.add(sisse_kolmas, 1, 7);
+        grid.add(kolmas, 0, 7);
+        Label neljas = new Label("Juhendaja");
+        TextField sisse_neljas = new TextField();
+        grid.add(sisse_neljas, 1, 8);
+        grid.add(neljas, 0, 8);
+        Label viies = new Label("");
+        TextField sisse_viies = new TextField();
+        grid.add(viies, 0, 9);
+        Label kuues = new Label("");
+        TextField sisse_kuues = new TextField();
+        grid.add(kuues, 0, 10);
+
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
+                if (grid.getChildren().contains(sisse_viies)){
+                    grid.getChildren().removeAll(sisse_viies,sisse_kuues);
+                    viies.setText("");
+                    kuues.setText("");
 
+                }
+                if (newValue.equals("Trenn")){
+                    esimene.setText("Toimumisaeg");
+                    teine.setText("Rühm");
+                    kolmas.setText("Asukoht");
+                    neljas.setText("Jehendaja");
+                    sisse_esimene.setPromptText("aaaa-kk-pp tt:mm");
+                    sisse_teine.setPromptText("");
+
+                }
+                if (newValue.equals("Võistlus")){
+                    esimene.setText("Toimumisaeg");
+                    kolmas.setText("Asukoht");
+                    teine.setText("Nimi");
+                    grid.getChildren().remove(sisse_neljas);
+                    neljas.setText("");
+                    sisse_esimene.setPromptText("aaaa-kk-pp");
+                    sisse_teine.setPromptText("");
+                }
+                if (newValue.equals("Õpilane")) {
+                    if (!grid.getChildren().contains(sisse_neljas)) {
+                        grid.add(sisse_neljas, 1, 8);
+                    }
+                    esimene.setText("Nimi");
+                    sisse_esimene.setPromptText("Eesnimi Perenimi");
+                    teine.setText("Lapsevanem");
+                    sisse_teine.setPromptText("Eesnimi Perenimi");
+                    kolmas.setText("Aadress");
+                    neljas.setText("Telefon");
+                    viies.setText("E-Mail");
+                    kuues.setText("Isikukood");
+                    grid.add(sisse_viies, 1, 9);
+                    grid.add(sisse_kuues, 1, 10);
+
+                }
             }
         });
 
@@ -196,6 +260,6 @@ public class Tegevused{
         box.getChildren().addAll(grid, scroll);
 
         return box;
-}
+    }
 
 }
