@@ -24,13 +24,11 @@ public class Andmebaas{
         vastus = "";
         while (tulemus.next()) {
             if (reas) {
-                for (int i = 0; i < elemendid.size(); i++) { //et tekiks vahed erinevate tulemuste vahel
                     for (String el : kuvamine) {
 
                         vastus = vastus + el + ": " + tulemus.getString(el) + "\n";
                     }
-                    vastus = vastus + "\n";
-                }
+                    vastus = vastus + "\n"; //et näiteks erinevate võistluste vahele tuleks tühi rida
             }
             else{
                     vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";

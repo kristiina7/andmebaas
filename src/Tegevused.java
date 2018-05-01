@@ -136,7 +136,7 @@ public class Tegevused{
         sc.setOrientation(Orientation.VERTICAL);
         Label tulemus = new Label();
         tulemus.getStyleClass().add("label-vastus");
-        
+
         try{
             tulemus.setText(andmebaas.sqlSaavutused(2018));
         }
