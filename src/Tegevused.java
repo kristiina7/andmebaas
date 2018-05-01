@@ -3,13 +3,19 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.scene.control.ComboBox;
+import javafx.geometry.Orientation;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 
@@ -126,9 +132,11 @@ public class Tegevused{
         grid.add(aasta, 0, 0);
         grid.add(valikud,1,0);
 
+        ScrollBar sc = new ScrollBar();
+        sc.setOrientation(Orientation.VERTICAL);
         Label tulemus = new Label();
         tulemus.getStyleClass().add("label-vastus");
-
+        
         try{
             tulemus.setText(andmebaas.sqlSaavutused(2018));
         }
@@ -141,13 +149,17 @@ public class Tegevused{
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
                 try{
                     tulemus.setText(andmebaas.sqlSaavutused(Integer.parseInt(newValue)));
+                    //tekst.append(andmebaas.sqlSaavutused(Integer.parseInt(newValue)));
                 }
                 catch (SQLException e){
                     throw new RuntimeException();
                 }
             }
         });
-        box.getChildren().addAll(grid, tulemus);
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(tulemus);
+
+        box.getChildren().addAll(grid, scroll);
         return box;
     }
 

@@ -39,6 +39,13 @@
  .label-event{
     -fx-text-fill: #e30311;
  }
+ .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+ }
+
+.scroll-pane {
+   -fx-background-color: transparent;
+}
 
 #pane{
      -fx-background-image: url("triiniks6.png");
