@@ -145,7 +145,7 @@ public class Tegevused{
     }
 
 
-    public GridPane annaLisamine() {
+    public ScrollPane annaLisamine() {
         GridPane grid = new GridPane();
         ObservableList<String> valitavad = FXCollections.observableArrayList("Trenn", "Õpilane", "Võistlus");
         ComboBox<String> valikud = new ComboBox<>(valitavad);
@@ -156,6 +156,8 @@ public class Tegevused{
         valikud.getSelectionModel().select(0); //alguses on ees trenni lisamine
         grid.add(keda, 0, 0);
         grid.add(valikud, 1, 0);
+        Button lisa = new Button("Lisa");
+        grid.add(lisa, 2,0);
 
         Label esimene = new Label("Toimumisaeg");
         TextField sisse_esimene = new TextField();
@@ -180,30 +182,57 @@ public class Tegevused{
         Label kuues = new Label("");
         TextField sisse_kuues = new TextField();
         grid.add(kuues, 0, 10);
+        Label aadress = new Label("");
+        TextField sisse_aadress = new TextField();
+        grid.add(aadress, 0, 11);
+        Label telefon = new Label("");
+        TextField sisse_telefon = new TextField();
+        grid.add(telefon, 0, 12);
+        Label email = new Label("");
+        TextField sisse_email = new TextField();
+        grid.add(email, 0, 13);
+        Label kommentaar = new Label("");
+        TextField sisse_kommentaar = new TextField();
+        grid.add(kommentaar, 0, 14);
+
+
+        //Lapsevanema olemasolu kontroll
+        ObservableList<String> olemas = FXCollections.observableArrayList("Olemas", "Ei ole");
+        ComboBox<String> olemasolu = new ComboBox<>(olemas);
+        Label vanem = new Label("");
+        grid.add(vanem, 0, 1);
+        olemasolu.getStyleClass().add("combo-box");
+        olemasolu.getSelectionModel().select(0);
 
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
-                if (grid.getChildren().contains(sisse_viies)){
-                    grid.getChildren().removeAll(sisse_viies,sisse_kuues);
+                if (grid.getChildren().contains(sisse_viies)) {
+                    grid.getChildren().removeAll(sisse_viies, sisse_kuues, olemasolu, sisse_aadress, sisse_email, sisse_telefon, sisse_kommentaar);
                     viies.setText("");
                     kuues.setText("");
+                    aadress.setText("");
+                    email.setText("");
+                    telefon.setText("");
+                    kommentaar.setText("");
+                    vanem.setText("");
 
                 }
-                if (newValue.equals("Trenn")){
+                if (newValue.equals("Trenn")) {
                     esimene.setText("Toimumisaeg");
                     teine.setText("Rühm");
                     kolmas.setText("Asukoht");
-                    neljas.setText("Jehendaja");
+                    neljas.setText("Juhendaja");
                     sisse_esimene.setPromptText("aaaa-kk-pp tt:mm");
                     sisse_teine.setPromptText("");
 
                 }
-                if (newValue.equals("Võistlus")){
+                if (newValue.equals("Võistlus")) {
                     esimene.setText("Toimumisaeg");
                     kolmas.setText("Asukoht");
                     teine.setText("Nimi");
-                    grid.getChildren().remove(sisse_neljas);
-                    neljas.setText("");
+                    neljas.setText("Osalev rühm");
+                    viies.setText("Tulemus");
+                    grid.add(sisse_viies, 1, 9);
                     sisse_esimene.setPromptText("aaaa-kk-pp");
                     sisse_teine.setPromptText("");
                 }
@@ -211,22 +240,80 @@ public class Tegevused{
                     if (!grid.getChildren().contains(sisse_neljas)) {
                         grid.add(sisse_neljas, 1, 8);
                     }
+                    vanem.setText("Lapsevanem: ");
+                    grid.add(olemasolu, 1, 1);
+
                     esimene.setText("Nimi");
                     sisse_esimene.setPromptText("Eesnimi Perenimi");
-                    teine.setText("Lapsevanem");
-                    sisse_teine.setPromptText("Eesnimi Perenimi");
+                    sisse_teine.setPromptText("");
                     kolmas.setText("Aadress");
                     neljas.setText("Telefon");
                     viies.setText("E-Mail");
-                    kuues.setText("Isikukood");
-                    grid.add(sisse_viies, 1, 9);
+                    teine.setText("Isikukood");
+                    kuues.setText("Lapsevanem");
                     grid.add(sisse_kuues, 1, 10);
+                    sisse_kuues.setPromptText("Eesnimi Perenimi");
+                    grid.add(sisse_viies, 1, 9);
 
+
+                    olemasolu.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+                        public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
+                            if (newValue.equals("Olemas")) {
+                                grid.getChildren().removeAll(sisse_aadress, sisse_email, sisse_telefon, sisse_kommentaar);
+                                aadress.setText("");
+                                email.setText("");
+                                telefon.setText("");
+                                kommentaar.setText("");
+                            }
+                            if (newValue.equals("Ei ole")){
+
+                                aadress.setText("Vanema aadress");
+                                email.setText("Vanema e-Mail");
+                                telefon.setText("Vanema telefon");
+                                kommentaar.setText("Vanema kommentaar");
+                                grid.add(sisse_aadress, 1, 11);
+                                grid.add(sisse_telefon, 1, 12);
+                                grid.add(sisse_email, 1, 13);
+                                grid.add(sisse_kommentaar, 1, 14);
+                            }
+
+                        }});
+                }
+            }});
+        lisa.setOnMouseClicked(event -> {
+            if (teine.getText().equals("Rühm")){
+                try {
+                    andmebaas.sqlLisaTrenn(sisse_neljas.getText(), sisse_teine.getText(), sisse_kolmas.getText(), sisse_esimene.getText());
+                }catch (SQLException e){
+                    throw new RuntimeException();
+                }}
+            if (teine.getText().equals("Nimi")){
+                try {
+                    andmebaas.sqlLisaVõistlus(sisse_kolmas.getText(), sisse_esimene.getText(), sisse_teine.getText());
+                    andmebaas.sqlLisaTulemus(sisse_teine.getText(), sisse_neljas.getText(), sisse_viies.getText());
+                }catch (SQLException e){
+                    throw new RuntimeException();
+                }
+            }
+            if (teine.getText().equals("Isikukood") && !grid.getChildren().contains(sisse_email)){
+                try {
+                    andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
+                }catch (SQLException e){
+                    throw new RuntimeException();
+                }
+            }
+            if (teine.getText().equals("Isikukood") && grid.getChildren().contains(sisse_email)){
+                try {
+                    andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
+                    andmebaas.sqlLisaVanem(sisse_kuues.getText(), sisse_aadress.getText(), sisse_kommentaar.getText(), sisse_email.getText(), sisse_telefon.getText());
+                }catch (SQLException e){
+                    throw new RuntimeException();
                 }
             }
         });
-
-        return grid;
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(grid);
+        return scroll;
     }
     public VBox annaAktiivsus() throws SQLException{
         VBox box = new VBox();
