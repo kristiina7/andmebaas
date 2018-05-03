@@ -11,14 +11,30 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
     private ResultSet tulemus;
     private String vastus = "";
     private List<String> elemendid= new ArrayList<>();
+    private List<String> päringus = new ArrayList<>();
 
 
     public Andmebaas(Connection connection) throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
         this.connection = connection;
     }
     public void korduv(String päring, List<String> kuvamine, boolean reas) throws SQLException{
-        PreparedStatement Andmed = connection.prepareStatement(päring);
-        tulemus = Andmed.executeQuery();
+
+        int küsimärke = 0;
+        int viimane = 0;
+        while(viimane != -1){
+            viimane = päring.indexOf("?", viimane);
+            if (viimane != -1){
+                küsimärke ++;
+                viimane += 1;
+            }
+        }
+        PreparedStatement andmed = connection.prepareStatement(päring);
+        for (int i = 0; i < küsimärke; i++){
+            andmed.setString(i+1, päringus.get(i));
+        }
+
+
+        tulemus = andmed.executeQuery();
         vastus = "";
         while (tulemus.next()) {
             if (reas) {
@@ -34,13 +50,14 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         }
         elemendid.clear();
         tulemus.close();
-        Andmed.close();
+        andmed.close();
 
     }
 
     public String sqlÕpilaseAndmed(String nimi) throws SQLException{
         String[] jupid = nimi.trim().split(" ");
-        String päring = "select * from Õpilased where eesnimi = '" + jupid[0] + "' and perenimi = '" + jupid[1] + "'";
+        String päring = "select * from Õpilased where eesnimi = ? and perenimi = ?";
+        Collections.addAll(päringus, jupid[0], jupid[1]);
         Collections.addAll(elemendid, "Eesnimi", "Perenimi", "Aadress", "Telefon", "E-Mail", "isikukood", "Sünnikuupäev");
 
         korduv(päring, elemendid, true);
