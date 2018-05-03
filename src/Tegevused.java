@@ -317,8 +317,8 @@ public class Tegevused{
             }
             if (teine.getText().equals("Isikukood") && grid.getChildren().contains(sisse_email)){
                 try {
-                    andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
                     andmebaas.sqlLisaVanem(sisse_kuues.getText(), sisse_aadress.getText(), sisse_kommentaar.getText(), sisse_email.getText(), sisse_telefon.getText());
+                    andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
                 }catch (SQLException e){
                     e.printStackTrace();
                     throw new RuntimeException();
