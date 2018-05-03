@@ -272,7 +272,7 @@ public class Tegevused{
                                 kommentaar.setText("");
                             }
                             if (newValue.equals("Ei ole")){
-
+                                grid.getChildren().removeAll(sisse_aadress, sisse_email, sisse_telefon, sisse_kommentaar);
                                 aadress.setText("Vanema aadress");
                                 email.setText("Vanema e-Mail");
                                 telefon.setText("Vanema telefon");
