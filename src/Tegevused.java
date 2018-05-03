@@ -145,8 +145,9 @@ public class Tegevused{
     }
 
 
-    public ScrollPane annaLisamine() {
+    public VBox annaLisamine() {
         GridPane grid = new GridPane();
+        VBox box = new VBox();
         ObservableList<String> valitavad = FXCollections.observableArrayList("Trenn", "Õpilane", "Võistlus");
         ComboBox<String> valikud = new ComboBox<>(valitavad);
         Label keda = new Label("Lisa uus");
@@ -206,6 +207,19 @@ public class Tegevused{
 
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
+                if (!sisse_esimene.getText().equals("")){
+                    sisse_esimene.setText("");
+                    sisse_teine.setText("");
+                    sisse_kolmas.setText("");
+                    sisse_neljas.setText("");
+                    sisse_viies.setText("");
+                    sisse_kuues.setText("");
+                    sisse_aadress.setText("");
+                    sisse_email.setText("");
+                    sisse_telefon.setText("");
+                    sisse_kommentaar.setText("");
+
+                }
                 if (grid.getChildren().contains(sisse_viies)) {
                     grid.getChildren().removeAll(sisse_viies, sisse_kuues, olemasolu, sisse_aadress, sisse_email, sisse_telefon, sisse_kommentaar);
                     viies.setText("");
@@ -285,6 +299,8 @@ public class Tegevused{
                 try {
                     andmebaas.sqlLisaTrenn(sisse_neljas.getText(), sisse_teine.getText(), sisse_kolmas.getText(), sisse_esimene.getText());
                 }catch (SQLException e){
+
+                    e.printStackTrace();
                     throw new RuntimeException();
                 }}
             if (teine.getText().equals("Nimi")){
@@ -292,6 +308,7 @@ public class Tegevused{
                     andmebaas.sqlLisaVõistlus(sisse_kolmas.getText(), sisse_esimene.getText(), sisse_teine.getText());
                     andmebaas.sqlLisaTulemus(sisse_teine.getText(), sisse_neljas.getText(), sisse_viies.getText());
                 }catch (SQLException e){
+                    e.printStackTrace();
                     throw new RuntimeException();
                 }
             }
@@ -299,6 +316,7 @@ public class Tegevused{
                 try {
                     andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
                 }catch (SQLException e){
+                    e.printStackTrace();
                     throw new RuntimeException();
                 }
             }
@@ -307,13 +325,15 @@ public class Tegevused{
                     andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
                     andmebaas.sqlLisaVanem(sisse_kuues.getText(), sisse_aadress.getText(), sisse_kommentaar.getText(), sisse_email.getText(), sisse_telefon.getText());
                 }catch (SQLException e){
+                    e.printStackTrace();
                     throw new RuntimeException();
                 }
             }
         });
         ScrollPane scroll = new ScrollPane();
         scroll.setContent(grid);
-        return scroll;
+        box.getChildren().addAll(grid, scroll);
+        return box;
     }
     public VBox annaAktiivsus() throws SQLException{
         VBox box = new VBox();

@@ -135,7 +135,7 @@ public class Andmebaas{
         else aasta = "19";
         String kuupäev = aasta + isikukood.substring(1, 3) + "-" + isikukood.substring(3, 5) + "-" + isikukood.substring(5,7);
         String päring = "insert into Õpilased (Lapsevanem_ID, Eesnimi, Perenimi, Aadress, Telefon, \"E-Mail\", Isikukood, Sünnikuupäev)\n" +
-                "values (f_vanemId('"+ lv[0]+ "', '"+lv[1]+"'), '"+õp[0]+"', '"+õp[1]+"', '"+aadress+"', '"+telefon+"', , '"+email+"', , '"+isikukood+"', '"+kuupäev+"')";
+                "values (f_vanemId('"+ lv[0]+ "', '"+lv[1]+"'), '"+õp[0]+"', '"+õp[1]+"', '"+aadress+"', '"+telefon+"', '"+email+"', '"+isikukood+"', '"+kuupäev+"')";
         PreparedStatement Andmed = connection.prepareStatement(päring);
         Andmed.executeQuery();
         Andmed.close();
