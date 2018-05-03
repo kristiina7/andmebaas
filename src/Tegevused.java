@@ -143,9 +143,13 @@ public class Tegevused{
         box.getChildren().addAll(grid, scroll);
         return box;
     }
-
+    public void eemalda(TextField[] sisend){
+        for (TextField el: sisend){
+        el.setText("");
+    }}
 
     public VBox annaLisamine() {
+
         GridPane grid = new GridPane();
         VBox box = new VBox();
         ObservableList<String> valitavad = FXCollections.observableArrayList("Trenn", "Õpilane", "Võistlus");
@@ -205,21 +209,9 @@ public class Tegevused{
         olemasolu.getStyleClass().add("combo-box");
         olemasolu.getSelectionModel().select(0);
 
+        TextField[] sisend = {sisse_esimene, sisse_teine, sisse_kolmas, sisse_neljas, sisse_viies,sisse_kuues, sisse_aadress, sisse_telefon,sisse_email,sisse_kommentaar};
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
-                if (!sisse_esimene.getText().equals("")){
-                    sisse_esimene.setText("");
-                    sisse_teine.setText("");
-                    sisse_kolmas.setText("");
-                    sisse_neljas.setText("");
-                    sisse_viies.setText("");
-                    sisse_kuues.setText("");
-                    sisse_aadress.setText("");
-                    sisse_email.setText("");
-                    sisse_telefon.setText("");
-                    sisse_kommentaar.setText("");
-
-                }
                 if (grid.getChildren().contains(sisse_viies)) {
                     grid.getChildren().removeAll(sisse_viies, sisse_kuues, olemasolu, sisse_aadress, sisse_email, sisse_telefon, sisse_kommentaar);
                     viies.setText("");
@@ -302,7 +294,9 @@ public class Tegevused{
 
                     e.printStackTrace();
                     throw new RuntimeException();
-                }}
+                }
+                eemalda(sisend);
+            }
             if (teine.getText().equals("Nimi")){
                 try {
                     andmebaas.sqlLisaVõistlus(sisse_kolmas.getText(), sisse_esimene.getText(), sisse_teine.getText());
@@ -319,6 +313,7 @@ public class Tegevused{
                     e.printStackTrace();
                     throw new RuntimeException();
                 }
+                eemalda(sisend);
             }
             if (teine.getText().equals("Isikukood") && grid.getChildren().contains(sisse_email)){
                 try {
@@ -328,6 +323,7 @@ public class Tegevused{
                     e.printStackTrace();
                     throw new RuntimeException();
                 }
+                eemalda(sisend);
             }
         });
         ScrollPane scroll = new ScrollPane();
