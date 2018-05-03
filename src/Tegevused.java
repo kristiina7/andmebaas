@@ -212,6 +212,8 @@ public class Tegevused{
         TextField[] sisend = {sisse_esimene, sisse_teine, sisse_kolmas, sisse_neljas, sisse_viies,sisse_kuues, sisse_aadress, sisse_telefon,sisse_email,sisse_kommentaar};
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
+                eemalda(sisend);
+                olemasolu.getSelectionModel().select(0);
                 if (grid.getChildren().contains(sisse_viies)) {
                     grid.getChildren().removeAll(sisse_viies, sisse_kuues, olemasolu, sisse_aadress, sisse_email, sisse_telefon, sisse_kommentaar);
                     viies.setText("");
