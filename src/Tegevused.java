@@ -80,8 +80,7 @@ public class Tegevused{
                     otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
                     box.getChildren().add(otsinguTulemus);
                 } catch (SQLException e){
-                    e.printStackTrace();
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
             if (nimi.getText().equals("Rühma nimi")){
@@ -90,8 +89,7 @@ public class Tegevused{
                     box.getChildren().add(otsinguTulemus);
                 }
                 catch (SQLException e){
-                    e.printStackTrace();
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
             if (nimi.getText().equals("Trenni aeg")) {
@@ -99,8 +97,7 @@ public class Tegevused{
                     otsinguTulemus.setText(andmebaas.sqlTrennisOsalejad(otsitav.getText(), otsitavRühm.getText()));
                     box.getChildren().add(otsinguTulemus);
                 } catch (SQLException e){
-                    e.printStackTrace();
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -133,7 +130,7 @@ public class Tegevused{
                     tulemus.setText(andmebaas.sqlSaavutused(Integer.parseInt(newValue)));
                 }
                 catch (SQLException e){
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -293,9 +290,7 @@ public class Tegevused{
                 try {
                     andmebaas.sqlLisaTrenn(sisse_neljas.getText(), sisse_teine.getText(), sisse_kolmas.getText(), sisse_esimene.getText());
                 }catch (SQLException e){
-
-                    e.printStackTrace();
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
                 eemalda(sisend);
             }
@@ -304,16 +299,14 @@ public class Tegevused{
                     andmebaas.sqlLisaVõistlus(sisse_kolmas.getText(), sisse_esimene.getText(), sisse_teine.getText());
                     andmebaas.sqlLisaTulemus(sisse_teine.getText(), sisse_neljas.getText(), sisse_viies.getText());
                 }catch (SQLException e){
-                    e.printStackTrace();
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
             if (teine.getText().equals("Isikukood") && !grid.getChildren().contains(sisse_email)){
                 try {
                     andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
                 }catch (SQLException e){
-                    e.printStackTrace();
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
                 eemalda(sisend);
             }
@@ -322,8 +315,7 @@ public class Tegevused{
                     andmebaas.sqlLisaVanem(sisse_kuues.getText(), sisse_aadress.getText(), sisse_kommentaar.getText(), sisse_email.getText(), sisse_telefon.getText());
                     andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
                 }catch (SQLException e){
-                    e.printStackTrace();
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
                 eemalda(sisend);
             }
@@ -356,7 +348,7 @@ public class Tegevused{
                     tulemus.setText(andmebaas.sqlAktiivsus(valikud.getValue()));
                 }
                 catch(SQLException e){
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
 
             }});

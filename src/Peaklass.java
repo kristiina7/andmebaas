@@ -80,7 +80,7 @@ public class Peaklass extends Application{
                     piirid.setCenter(tegevus.annaAktiivsus());
                 }
                 catch (SQLException e){
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             });
 
@@ -89,7 +89,7 @@ public class Peaklass extends Application{
                 try{piirid.setCenter(tegevus.annaSaavutused());
                 }
                 catch (SQLException e){
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             });
 
@@ -106,9 +106,10 @@ public class Peaklass extends Application{
                 connection.close();
             }
             catch (SQLException e){
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         });
+
 
 
             Scene stseen = new Scene(stack, 800, 500);

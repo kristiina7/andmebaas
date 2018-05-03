@@ -1,6 +1,4 @@
-import javax.xml.transform.Result;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Andmebaas{
+public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsimärkidega, uurida juhendit
     private Connection connection;
     private ResultSet tulemus;
     private String vastus = "";
