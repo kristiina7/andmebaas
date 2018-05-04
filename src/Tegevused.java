@@ -47,7 +47,10 @@ public class Tegevused{
                 if(grid.getChildren().contains(otsitavRühm)){ //juhuks kui enne otsiti trenni ja nüüd midagi muud
                     grid.getChildren().removeAll(otsitavRühm, nimiRühm);
                 }
+                if (box.getChildren().contains(otsinguTulemus)) box.getChildren().remove(otsinguTulemus);
+
                 otsitav.setText("");
+                otsitavRühm.setText("");
                 if (grid.getChildren().contains(otsinguTulemus)) grid.getChildren().remove(otsinguTulemus);
 
                 if (newValue.equals("Õpilane")) {
@@ -122,12 +125,12 @@ public class Tegevused{
         Label tulemus = new Label();
         tulemus.getStyleClass().add("label-vastus");
 
-        tulemus.setText(andmebaas.sqlSaavutused(2018));
+        tulemus.setText(andmebaas.sqlSaavutused("2018"));
 
         valikud.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
                 try{
-                    tulemus.setText(andmebaas.sqlSaavutused(Integer.parseInt(newValue)));
+                    tulemus.setText(andmebaas.sqlSaavutused(newValue));
                 }
                 catch (SQLException e){
                     throw new RuntimeException(e);
