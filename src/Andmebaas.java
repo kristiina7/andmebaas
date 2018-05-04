@@ -3,6 +3,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
     public Andmebaas(Connection connection) throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
         this.connection = connection;
     }
-    public void korduv(String päring, List<String> kuvamine, boolean reas) throws SQLException{
+    public void korduv(String päring, boolean reas) throws SQLException{
 
         int küsimärke = 0;
         int viimane = 0;
@@ -38,7 +39,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         vastus = "";
         while (tulemus.next()) {
             if (reas) {
-                    for (String el : kuvamine) {
+                    for (String el : elemendid) {
 
                         vastus = vastus + el + ": " + tulemus.getString(el) + "\n";
                     }
@@ -48,6 +49,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
                     vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";
             }
         }
+        päringus.clear();
         elemendid.clear();
         tulemus.close();
         andmed.close();
@@ -60,16 +62,17 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         Collections.addAll(päringus, jupid[0], jupid[1]);
         Collections.addAll(elemendid, "Eesnimi", "Perenimi", "Aadress", "Telefon", "E-Mail", "isikukood", "Sünnikuupäev");
 
-        korduv(päring, elemendid, true);
+        korduv(päring, true);
         return vastus;
     }
 
     public String sqlRühmaAndmed(String nimi) throws SQLException{
         String päring = "select Rühmad.nimetus, Õpilased.eesnimi, Õpilased.perenimi from Õpilased, Rühmad, " +
                 "On_rühmas where On_rühmas.rühm_id = Rühmad.ID and On_rühmas.Õpilane_ID = Õpilased.ID " +
-                "and rühmad.nimetus = '" + nimi + "'";
+                "and rühmad.nimetus = ?";
+        Collections.addAll(päringus, nimi);
         Collections.addAll(elemendid, "Eesnimi", "Perenimi");
-        korduv(päring, elemendid, false);
+        korduv(päring, false);
         return vastus;
     }
 
@@ -80,21 +83,23 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
                 "and Trennid.ID = Kohalolu.Trenn_ID \n" +
                 "and Trennid.Rühm_ID = On_rühmas.Rühm_ID\n" +
                 "and On_rühmas.Rühm_ID = Rühmad.ID\n" +
-                "and Trennid.Toimumisaeg like '" +trenn +  "%'\n" +
-                "and Rühmad.Nimetus = '" + rühm + "'";
+                "and date(Trennid.Toimumisaeg) = date(?) \n" +
+                "and Rühmad.Nimetus = ?";
 
+        Collections.addAll(päringus, trenn, rühm);
         Collections.addAll(elemendid, "Eesnimi", "Perenimi");
-        korduv(päring, elemendid, false);
+        korduv(päring, false);
         return vastus;
     }
 
-    public String sqlSaavutused(int aasta) throws SQLException{
+    public String sqlSaavutused(String aasta) throws SQLException{
         String päring = "select nimi, aeg, asukoht, saavutatud_tulemus as Tulemus, nimetus as Rühm\n" +
                 "from võistlused, võistleb, rühmad \n" +
                 "where võistleb.rühm_id = rühmad.id and võistleb.võistlus_id = võistlused.id\n" +
-                "and year(võistlused.aeg) = " + aasta;
+                "and year(võistlused.aeg) = ?";
+        Collections.addAll(päringus, aasta);
         Collections.addAll(elemendid, "Nimi", "Asukoht", "Aeg", "Rühm", "Tulemus");
-        korduv(päring, elemendid, true);
+        korduv(päring, true);
         return vastus;
     }
 
@@ -106,15 +111,18 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         while (tulemus.next()){
             vastused.add(tulemus.getString("Nimetus"));
         }
+        tulemus.close();
+        TrennisOsalejad.close();
         return vastused;
     }
 
     public String sqlAktiivsus(String rühm) throws SQLException{
         String päring = "select eesnimi + ' ' + perenimi as Nimi, count() as Trenne from Õpilased, Kohalolu, Trennid, Rühmad\n" +
                 "where Õpilased.ID = Kohalolu.Õpilane_ID and Kohalolu.Trenn_ID = Trennid.ID\n" +
-                "and Trennid.Rühm_ID = Rühmad.ID and Rühmad.Nimetus = '" + rühm + "' group by eesnimi, perenimi order by Trenne desc";
+                "and Trennid.Rühm_ID = Rühmad.ID and Rühmad.Nimetus = ? group by eesnimi, perenimi order by Trenne desc";
+        Collections.addAll(päringus, rühm);
         Collections.addAll(elemendid, "Nimi", "Trenne");
-        korduv(päring, elemendid, true);
+        korduv(päring, true);
         return vastus;
     }
     public void sqlLisaTrenn(String juhendaja, String rühm, String koht, String aeg) throws SQLException{
