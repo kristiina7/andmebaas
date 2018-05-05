@@ -28,7 +28,7 @@ public class Tegevused{
         grid.getStyleClass().add("grid-pane");
         grid.add(valikud, 0, 0);
         TextField otsitav = new TextField();
-        otsitav.setPromptText("Eesnimi Perenimi");
+        otsitav.setPromptText("Eesnimi Perenimi"); //vihjed tekstikasti kirjutamiseks
         ToggleButton otsi = new ToggleButton("Otsi");
         grid.add(otsi, 2,5);
 
@@ -49,7 +49,7 @@ public class Tegevused{
                 }
                 if (box.getChildren().contains(otsinguTulemus)) box.getChildren().remove(otsinguTulemus);
 
-                otsitav.setText("");
+                otsitav.setText(""); //tekstikastid tühjaks
                 otsitavRühm.setText("");
                 if (grid.getChildren().contains(otsinguTulemus)) grid.getChildren().remove(otsinguTulemus);
 
@@ -74,9 +74,9 @@ public class Tegevused{
             }});
         box.getChildren().add(grid);
 
-        otsi.setOnMouseClicked(event-> {
+        otsi.setOnMouseClicked(event-> { //kui vajutatakse otsi
 
-            if (box.getChildren().contains(otsinguTulemus)) box.getChildren().remove(otsinguTulemus);
+            if (box.getChildren().contains(otsinguTulemus)) box.getChildren().remove(otsinguTulemus); //eelnevalt otsitud asjade eemaldamine
 
             if (nimi.getText().equals("Õpilase nimi")) {
                 try {
@@ -112,13 +112,13 @@ public class Tegevused{
     public VBox annaSaavutused() throws SQLException{
         VBox box = new VBox();
         GridPane grid = new GridPane();
-        ObservableList<String> valitavad = FXCollections.observableArrayList("2018", "2017", "2016");
+        ObservableList<String> valitavad = FXCollections.observableArrayList(andmebaas.sqlAastad());
         ComboBox<String> valikud = new ComboBox<>(valitavad);
         Label aasta = new Label("Aasta");
 
         grid.getStyleClass().add("grid-pane");
         valikud.getStyleClass().add("combo-box");
-        valikud.getSelectionModel().select(0); //alguses on ees praeguse hooaja andmed
+        valikud.getSelectionModel().select(0); //alguses on ees viimase aasta andmed
         grid.add(aasta, 0, 0);
         grid.add(valikud,1,0);
 
@@ -161,7 +161,8 @@ public class Tegevused{
         valikud.getSelectionModel().select(0); //alguses on ees trenni lisamine
         grid.add(keda, 0, 0);
         grid.add(valikud, 1, 0);
-        Button lisa = new Button("Lisa");
+        ToggleButton lisa = new ToggleButton("Lisa");
+        lisa.getStyleClass().add("toggle-button-lisa");
         grid.add(lisa, 2,0);
 
         Label esimene = new Label("Toimumisaeg");
@@ -292,7 +293,46 @@ public class Tegevused{
             if (teine.getText().equals("Rühm")){
                 try {
                     andmebaas.sqlLisaTrenn(sisse_neljas.getText(), sisse_teine.getText(), sisse_kolmas.getText(), sisse_esimene.getText());
-                }catch (SQLException e){
+
+                    //õpilaste kohaolu märkimine
+                    box.getChildren().clear(); //aken tühjaks
+                    ScrollPane scroll = new ScrollPane();
+                    GridPane kohalolu = new GridPane();
+                    kohalolu.getStyleClass().add("grid-pane");
+
+                    String [] õpilased = andmebaas.sqlRühmaAndmed(sisse_teine.getText()).split("\n"); //rühmas olevad õpilased
+                    CheckBox[] kohalolijad = new CheckBox[õpilased.length];
+
+                    for (int i = 0; i < õpilased.length; i ++){
+                        CheckBox uus = new CheckBox(õpilased[i]);
+                        kohalolijad[i] = uus;
+                        kohalolu.add(uus, 1, i + 2);
+                    }
+                    Label pealkiri = new Label("Kohalolu");
+                    kohalolu.add(pealkiri, 1, 0);
+                    ToggleButton kinnita = new ToggleButton("Kinnita");
+                    kinnita.getStyleClass().add("toggle-button-lisa");
+                    kohalolu.add(kinnita, 1, õpilased.length + 3);
+                    scroll.setContent(kohalolu);
+                    box.getChildren().add(scroll);
+
+                    String aeg = sisse_esimene.getText();
+                    String rühm = sisse_teine.getText();
+                    kinnita.setOnMouseClicked(eventK -> {
+                        for (int i = 0; i < kohalolijad.length; i++){ //kontrollib iga õpilase puhul, kas oli kohalolijaks märgitud
+                            if (kohalolijad[i].isSelected()){
+                                try {
+                                    andmebaas.sqlLisaKohalolu(kohalolijad[i].getText(), aeg, rühm);
+                                }
+                                catch (SQLException e){
+                                    throw new RuntimeException(e);
+                                }
+                        }
+                        box.getChildren().clear(); //pärast kohalolijate näitamist ekraan tühjaks
+                    }});
+
+                }
+                catch (SQLException e){
                     throw new RuntimeException(e);
                 }
                 eemalda(sisend);

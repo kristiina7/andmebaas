@@ -32,6 +32,13 @@
 .toggle-button{
       -fx-graphic: "search.png"
 }
+.toggle-button-lisa{
+      -fx-graphic: "pencil.png"
+}
+.check-box{
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10;
+}
 
  .label{
     -fx-text-fill: #ffffff;

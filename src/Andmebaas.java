@@ -103,7 +103,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         return vastus;
     }
 
-    public List<String> sqlRühmad()throws SQLException{
+    public List<String> sqlRühmad()throws SQLException{ //comboboxis (aktiivsus) need rühmad, mis andmebaasis
         String päring = "select nimetus from rühmad";
         List<String> vastused = new ArrayList<>();
         PreparedStatement TrennisOsalejad = connection.prepareStatement(päring);
@@ -115,6 +115,20 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         TrennisOsalejad.close();
         return vastused;
     }
+
+    public List<String> sqlAastad()throws SQLException { //comboboxis (saavutused) need aastad, mis andmebaasis
+        String päring = "select distinct year(aeg) as Aasta from võistlused";
+        List<String> vastused = new ArrayList<>();
+        PreparedStatement VõistlusteAastad = connection.prepareStatement(päring);
+        ResultSet tulemus = VõistlusteAastad.executeQuery();
+        while (tulemus.next()) {
+            vastused.add(tulemus.getString("Aasta"));
+        }
+        tulemus.close();
+        VõistlusteAastad.close();
+        return vastused;
+    }
+
 
     public String sqlAktiivsus(String rühm) throws SQLException{
         String päring = "select eesnimi + ' ' + perenimi as Nimi, count() as Trenne from Õpilased, Kohalolu, Trennid, Rühmad\n" +
@@ -133,6 +147,21 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         Andmed.executeQuery();
         Andmed.close();
     }
+
+    public void sqlLisaKohalolu(String nimi, String aeg, String rühm) throws SQLException{
+        String[] jupid = nimi.trim().split(" ");
+        String päring = "insert into Kohalolu (Õpilane_ID, Trenn_ID)\n" +
+                "values (f_õpilaneID(?, ?), f_trennID(f_rühmId(?), datetime(?)))";
+        PreparedStatement lisa = connection.prepareStatement(päring);
+        lisa.setString(1, jupid[0]);
+        lisa.setString(2, jupid[1]);
+        lisa.setString(3, rühm);
+        lisa.setString(4, aeg);
+        lisa.executeQuery();
+        lisa.close();
+
+    }
+
     public void sqlLisaVõistlus(String koht, String aeg, String nimi) throws SQLException{
         String päring1 = "INSERT INTO Võistlused (Asukoht, Aeg, Nimi)\n" +
                 "Values ('"+koht+"', '"+aeg+"', '"+nimi+"')";
