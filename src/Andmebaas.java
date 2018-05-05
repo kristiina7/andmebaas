@@ -3,7 +3,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         this.connection = connection;
     }
 
-    public void käivita_päring(String päring) throws SQLException{
+    public void käivitaPäring(String päring) throws SQLException{
 
         int küsimärke = 0;
         int viimane = 0;
@@ -37,11 +36,12 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         }
 
         tulemus = andmed.executeQuery();
+        päringus.clear();
     }
 
     public void korduv(String päring, boolean reas) throws SQLException{
 
-        käivita_päring(päring);
+        käivitaPäring(päring);
 
         vastus = "";
         while (tulemus.next()) {
@@ -56,7 +56,6 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
                     vastus = vastus + tulemus.getString("Eesnimi") + " " + tulemus.getString("Perenimi") + "\n";
             }
         }
-        päringus.clear();
         elemendid.clear();
         tulemus.close();
         andmed.close();
@@ -151,8 +150,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         String päring = "insert into Trennid (Rühm_ID, Asukoht, Toimumisaeg, Juhendaja_ID)\n" +
                 "values (f_rühmId(?), ?, datetime(?), f_juhendajaId(? , ?))";
         Collections.addAll(päringus, rühm, koht, aeg, juh[0], juh[1]);
-        käivita_päring(päring);
-        päringus.clear();
+        käivitaPäring(päring);
         andmed.close();
     }
 
@@ -160,13 +158,10 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         String[] jupid = nimi.trim().split(" ");
         String päring = "insert into Kohalolu (Õpilane_ID, Trenn_ID)\n" +
                 "values (f_õpilaneID(?, ?), f_trennID(f_rühmId(?), datetime(?)))";
+        Collections.addAll(päringus, jupid[0], jupid[1], rühm, aeg);
         PreparedStatement lisa = connection.prepareStatement(päring);
-        lisa.setString(1, jupid[0]);
-        lisa.setString(2, jupid[1]);
-        lisa.setString(3, rühm);
-        lisa.setString(4, aeg);
-        lisa.executeQuery();
-        lisa.close();
+        käivitaPäring(päring);
+        andmed.close();
 
     }
 
@@ -174,16 +169,14 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         String päring = "INSERT INTO Võistlused (Asukoht, Aeg, Nimi)\n" +
                 "Values (? , date(?), ?)";
         Collections.addAll(päringus, koht, aeg, nimi);
-        käivita_päring(päring);
-        päringus.clear();
+        käivitaPäring(päring);
         andmed.close();
         }
     public void sqlLisaTulemus(String nimi, String rühm, String tulemus) throws SQLException{
         String päring = "INSERT INTO Võistleb (Rühm_ID, Võistlus_ID, Saavutatud_tulemus)\n" +
                 "Values (f_rühmId(?), f_VõistlusId(?), ?)";
         Collections.addAll(päringus, rühm, nimi, tulemus);
-        käivita_päring(päring);
-        päringus.clear();
+        käivitaPäring(päring);
         andmed.close();
 
     }
@@ -200,8 +193,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         String päring = "insert into Õpilased (Lapsevanem_ID, Eesnimi, Perenimi, Aadress, Telefon, \"E-Mail\", Isikukood, Sünnikuupäev)\n" +
                 "values (f_vanemId(?, ?), ?, ?, ?, cast(? as int), ?, ?, date(?))";
         Collections.addAll(päringus, lv[0], lv[1], õp[0], õp[1], aadress, telefon, email, isikukood, kuupäev);
-        käivita_päring(päring);
-        päringus.clear();
+        käivitaPäring(päring);
         andmed.close();
     }
     public void sqlLisaVanem(String nimi, String aadress, String kommentaar, String email, String telefon) throws SQLException{
@@ -209,8 +201,7 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         String päring = "insert into Lapsevanemad (Eesnimi, Perenimi, Aadress, Telefon, \"E-Mail\", Kommentaar)\n" +
                 "values (?, ?, ?, cast(? as int), ?, ?)";
         Collections.addAll(päringus, vanem[0], vanem[1], aadress, telefon, email, kommentaar);
-        käivita_päring(päring);
-        päringus.clear();
+        käivitaPäring(päring);
         andmed.close();
     }
 }
