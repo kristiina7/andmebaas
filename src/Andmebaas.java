@@ -13,12 +13,14 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
     private String vastus = "";
     private List<String> elemendid= new ArrayList<>();
     private List<String> päringus = new ArrayList<>();
+    private PreparedStatement andmed;
 
 
     public Andmebaas(Connection connection) throws SQLException{ //konstruktoris loome ühenduse andmebaasiga
         this.connection = connection;
     }
-    public void korduv(String päring, boolean reas) throws SQLException{
+
+    public void käivita_päring(String päring) throws SQLException{
 
         int küsimärke = 0;
         int viimane = 0;
@@ -29,13 +31,18 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
                 viimane += 1;
             }
         }
-        PreparedStatement andmed = connection.prepareStatement(päring);
+        andmed = connection.prepareStatement(päring);
         for (int i = 0; i < küsimärke; i++){
             andmed.setString(i+1, päringus.get(i));
         }
 
-
         tulemus = andmed.executeQuery();
+    }
+
+    public void korduv(String päring, boolean reas) throws SQLException{
+
+        käivita_päring(päring);
+
         vastus = "";
         while (tulemus.next()) {
             if (reas) {
@@ -142,10 +149,11 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
     public void sqlLisaTrenn(String juhendaja, String rühm, String koht, String aeg) throws SQLException{
         String[] juh = juhendaja.split(" ");
         String päring = "insert into Trennid (Rühm_ID, Asukoht, Toimumisaeg, Juhendaja_ID)\n" +
-                "values (f_rühmId('"+ rühm+ "'), '"+koht+"', '"+aeg+"', f_juhendajaId('"+juh[0]+"', '"+juh[1]+"'))";
-        PreparedStatement Andmed = connection.prepareStatement(päring);
-        Andmed.executeQuery();
-        Andmed.close();
+                "values (f_rühmId(?), ?, datetime(?), f_juhendajaId(? , ?))";
+        Collections.addAll(päringus, rühm, koht, aeg, juh[0], juh[1]);
+        käivita_päring(päring);
+        päringus.clear();
+        andmed.close();
     }
 
     public void sqlLisaKohalolu(String nimi, String aeg, String rühm) throws SQLException{
@@ -163,41 +171,46 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
     }
 
     public void sqlLisaVõistlus(String koht, String aeg, String nimi) throws SQLException{
-        String päring1 = "INSERT INTO Võistlused (Asukoht, Aeg, Nimi)\n" +
-                "Values ('"+koht+"', '"+aeg+"', '"+nimi+"')";
-        PreparedStatement andmed1 = connection.prepareStatement(päring1);
-        andmed1.executeQuery();
-        andmed1.close();
+        String päring = "INSERT INTO Võistlused (Asukoht, Aeg, Nimi)\n" +
+                "Values (? , date(?), ?)";
+        Collections.addAll(päringus, koht, aeg, nimi);
+        käivita_päring(päring);
+        päringus.clear();
+        andmed.close();
         }
     public void sqlLisaTulemus(String nimi, String rühm, String tulemus) throws SQLException{
-        String päring2 = "INSERT INTO Võistleb (Rühm_ID, Võistlus_ID, Saavutatud_tulemus)\n" +
-                "Values (f_rühmId('"+rühm+"'), f_VõistlusId('"+nimi+"'), '"+tulemus+"')";
-        PreparedStatement andmed2 = connection.prepareStatement(päring2);
-        andmed2.executeQuery();
-        andmed2.close();
+        String päring = "INSERT INTO Võistleb (Rühm_ID, Võistlus_ID, Saavutatud_tulemus)\n" +
+                "Values (f_rühmId(?), f_VõistlusId(?), ?)";
+        Collections.addAll(päringus, rühm, nimi, tulemus);
+        käivita_päring(päring);
+        päringus.clear();
+        andmed.close();
 
     }
     public void sqlLisaÕpilane(String nimi, String aadress, String isikukood, String email, String telefon, String vanem) throws SQLException{
         String[] õp = nimi.split(" ");
         String[] lv = vanem.split(" ");
         String aasta;
-        if (isikukood.substring(0, 1).equals('5')||isikukood.substring(0, 1).equals('6')){
+        if (isikukood.substring(0, 1).equals("5")||isikukood.substring(0, 1).equals("6")){
             aasta = "20";
         }
         else aasta = "19";
+
         String kuupäev = aasta + isikukood.substring(1, 3) + "-" + isikukood.substring(3, 5) + "-" + isikukood.substring(5,7);
         String päring = "insert into Õpilased (Lapsevanem_ID, Eesnimi, Perenimi, Aadress, Telefon, \"E-Mail\", Isikukood, Sünnikuupäev)\n" +
-                "values (f_vanemId('"+ lv[0]+ "', '"+lv[1]+"'), '"+õp[0]+"', '"+õp[1]+"', '"+aadress+"', '"+telefon+"', '"+email+"', '"+isikukood+"', '"+kuupäev+"')";
-        PreparedStatement Andmed = connection.prepareStatement(päring);
-        Andmed.executeQuery();
-        Andmed.close();
+                "values (f_vanemId(?, ?), ?, ?, ?, cast(? as int), ?, ?, date(?))";
+        Collections.addAll(päringus, lv[0], lv[1], õp[0], õp[1], aadress, telefon, email, isikukood, kuupäev);
+        käivita_päring(päring);
+        päringus.clear();
+        andmed.close();
     }
     public void sqlLisaVanem(String nimi, String aadress, String kommentaar, String email, String telefon) throws SQLException{
         String[] vanem = nimi.split(" ");
         String päring = "insert into Lapsevanemad (Eesnimi, Perenimi, Aadress, Telefon, \"E-Mail\", Kommentaar)\n" +
-                "values ('"+ vanem[0]+ "', '"+vanem[1]+"', '"+aadress+"', '"+telefon+"', '"+email+"', '"+kommentaar+"')";
-        PreparedStatement Andmed = connection.prepareStatement(päring);
-        Andmed.executeQuery();
-        Andmed.close();
+                "values (?, ?, ?, cast(? as int), ?, ?)";
+        Collections.addAll(päringus, vanem[0], vanem[1], aadress, telefon, email, kommentaar);
+        käivita_päring(päring);
+        päringus.clear();
+        andmed.close();
     }
 }
