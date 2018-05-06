@@ -83,6 +83,7 @@ public class Tegevused{
                     otsinguTulemus.setText(andmebaas.sqlÕpilaseAndmed(otsitav.getText()));
                     box.getChildren().add(otsinguTulemus);
                 } catch (SQLException e){
+                    Hoiatus.aken("Tekkis viga");
                     throw new RuntimeException(e);
                 }
             }
@@ -92,6 +93,7 @@ public class Tegevused{
                     box.getChildren().add(otsinguTulemus);
                 }
                 catch (SQLException e){
+                    Hoiatus.aken("Tekkis viga");
                     throw new RuntimeException(e);
                 }
             }
@@ -100,6 +102,7 @@ public class Tegevused{
                     otsinguTulemus.setText(andmebaas.sqlTrennisOsalejad(otsitav.getText(), otsitavRühm.getText()));
                     box.getChildren().add(otsinguTulemus);
                 } catch (SQLException e){
+                    Hoiatus.aken("Tekkis viga");
                     throw new RuntimeException(e);
                 }
             }
@@ -133,6 +136,7 @@ public class Tegevused{
                     tulemus.setText(andmebaas.sqlSaavutused(newValue));
                 }
                 catch (SQLException e){
+                    Hoiatus.aken("Tekkis viga");
                     throw new RuntimeException(e);
                 }
             }
@@ -291,76 +295,106 @@ public class Tegevused{
             }});
         lisa.setOnMouseClicked(event -> {
             if (teine.getText().equals("Rühm")){
-                try {
-                    andmebaas.sqlLisaTrenn(sisse_neljas.getText(), sisse_teine.getText(), sisse_kolmas.getText(), sisse_esimene.getText());
+                if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
+                        || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty()){
+                    Hoiatus.aken("Tühi väli! Täida kõik väljad.");
+                }
+                else {
+                    try {
 
-                    //õpilaste kohaolu märkimine
-                    box.getChildren().clear(); //aken tühjaks
-                    ScrollPane scroll = new ScrollPane();
-                    GridPane kohalolu = new GridPane();
-                    kohalolu.getStyleClass().add("grid-pane");
+                        andmebaas.sqlLisaTrenn(sisse_neljas.getText(), sisse_teine.getText(), sisse_kolmas.getText(), sisse_esimene.getText());
 
-                    String [] õpilased = andmebaas.sqlRühmaAndmed(sisse_teine.getText()).split("\n"); //rühmas olevad õpilased
-                    CheckBox[] kohalolijad = new CheckBox[õpilased.length];
+                        //õpilaste kohaolu märkimine
+                        box.getChildren().clear(); //aken tühjaks
+                        ScrollPane scroll = new ScrollPane();
+                        GridPane kohalolu = new GridPane();
+                        kohalolu.getStyleClass().add("grid-pane");
 
-                    for (int i = 0; i < õpilased.length; i ++){
-                        CheckBox uus = new CheckBox(õpilased[i]);
-                        kohalolijad[i] = uus;
-                        kohalolu.add(uus, 1, i + 2);
-                    }
-                    Label pealkiri = new Label("Kohalolu");
-                    kohalolu.add(pealkiri, 1, 0);
-                    ToggleButton kinnita = new ToggleButton("Kinnita");
-                    kinnita.getStyleClass().add("toggle-button-lisa");
-                    kohalolu.add(kinnita, 1, õpilased.length + 3);
-                    scroll.setContent(kohalolu);
-                    box.getChildren().add(scroll);
+                        String[] õpilased = andmebaas.sqlRühmaAndmed(sisse_teine.getText()).split("\n"); //rühmas olevad õpilased
+                        CheckBox[] kohalolijad = new CheckBox[õpilased.length];
 
-                    String aeg = sisse_esimene.getText();
-                    String rühm = sisse_teine.getText();
-                    kinnita.setOnMouseClicked(eventK -> {
-                        for (int i = 0; i < kohalolijad.length; i++){ //kontrollib iga õpilase puhul, kas oli kohalolijaks märgitud
-                            if (kohalolijad[i].isSelected()){
-                                try {
-                                    andmebaas.sqlLisaKohalolu(kohalolijad[i].getText(), aeg, rühm);
-                                }
-                                catch (SQLException e){
-                                    throw new RuntimeException(e);
-                                }
+                        for (int i = 0; i < õpilased.length; i++) {
+                            CheckBox uus = new CheckBox(õpilased[i]);
+                            kohalolijad[i] = uus;
+                            kohalolu.add(uus, 1, i + 2);
                         }
-                        box.getChildren().clear(); //pärast kohalolijate näitamist ekraan tühjaks
-                    }});
+                        Label pealkiri = new Label("Kohalolu");
+                        kohalolu.add(pealkiri, 1, 0);
+                        ToggleButton kinnita = new ToggleButton("Kinnita");
+                        kinnita.getStyleClass().add("toggle-button-lisa");
+                        kohalolu.add(kinnita, 1, õpilased.length + 3);
+                        scroll.setContent(kohalolu);
+                        box.getChildren().add(scroll);
 
+                        String aeg = sisse_esimene.getText();
+                        String rühm = sisse_teine.getText();
+                        kinnita.setOnMouseClicked(eventK -> {
+                            for (int i = 0; i < kohalolijad.length; i++) { //kontrollib iga õpilase puhul, kas oli kohalolijaks märgitud
+                                if (kohalolijad[i].isSelected()) {
+                                    try {
+                                        andmebaas.sqlLisaKohalolu(kohalolijad[i].getText(), aeg, rühm);
+                                    } catch (SQLException e) {
+                                        Hoiatus.aken("Tekkis viga");
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                                box.getChildren().clear(); //pärast kohalolijate näitamist ekraan tühjaks
+                            }
+                        });
+
+                    } catch (SQLException e) {
+                        Hoiatus.aken("Tekkis viga");
+                        throw new RuntimeException(e);
+                    }
+                    eemalda(sisend);
                 }
-                catch (SQLException e){
-                    throw new RuntimeException(e);
-                }
-                eemalda(sisend);
             }
-            if (teine.getText().equals("Nimi")){
-                try {
-                    andmebaas.sqlLisaVõistlus(sisse_kolmas.getText(), sisse_esimene.getText(), sisse_teine.getText());
-                    andmebaas.sqlLisaTulemus(sisse_teine.getText(), sisse_neljas.getText(), sisse_viies.getText());
-                }catch (SQLException e){
-                    throw new RuntimeException(e);
+            if (teine.getText().equals("Nimi")) {
+                if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
+                        || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty() || sisse_viies.getText().isEmpty()) {
+                    Hoiatus.aken("Tühi väli! Täida kõik väljad.");
+                } else {
+                    try {
+                        andmebaas.sqlLisaVõistlus(sisse_kolmas.getText(), sisse_esimene.getText(), sisse_teine.getText());
+                        andmebaas.sqlLisaTulemus(sisse_teine.getText(), sisse_neljas.getText(), sisse_viies.getText());
+                    } catch (SQLException e) {
+                        Hoiatus.aken("Tekkis viga");
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
-            if (teine.getText().equals("Isikukood") && !grid.getChildren().contains(sisse_email)){
-                try {
-                    andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
-                }catch (SQLException e){
-                    throw new RuntimeException(e);
                 }
-                eemalda(sisend);
-            }
-            if (teine.getText().equals("Isikukood") && grid.getChildren().contains(sisse_email)){
-                try {
-                    andmebaas.sqlLisaVanem(sisse_kuues.getText(), sisse_aadress.getText(), sisse_kommentaar.getText(), sisse_email.getText(), sisse_telefon.getText());
-                    andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
-                }catch (SQLException e){
-                    throw new RuntimeException(e);
+                if (teine.getText().equals("Isikukood") && !grid.getChildren().contains(sisse_email)) {
+                    if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
+                            || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty()
+                            || sisse_viies.getText().isEmpty() || sisse_kuues.getText().isEmpty()){
+                        Hoiatus.aken("Tühi väli! Täida kõik väljad.");
+                    }
+                    else {
+                    try {
+                        andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
+                    } catch (SQLException e) {
+                        Hoiatus.aken("Tekkis viga");
+                        throw new RuntimeException(e);
+                    }
+                    eemalda(sisend);
                 }
-                eemalda(sisend);
+                if (teine.getText().equals("Isikukood") && grid.getChildren().contains(sisse_email)) {
+                    if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
+                            || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty()
+                            || sisse_viies.getText().isEmpty() || sisse_kuues.getText().isEmpty()
+                            || sisse_aadress.getText().isEmpty() || sisse_email.getText().isEmpty()
+                            || sisse_telefon.getText().isEmpty()) {
+                        Hoiatus.aken("Tühi väli! Täida kõik väljad.");
+                    } else {
+                    try {
+                        andmebaas.sqlLisaVanem(sisse_kuues.getText(), sisse_aadress.getText(), sisse_kommentaar.getText(), sisse_email.getText(), sisse_telefon.getText());
+                        andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
+                    } catch (SQLException e) {
+                        Hoiatus.aken("Tekkis viga");
+                        throw new RuntimeException(e);
+                    }
+                    eemalda(sisend);
+                }}
             }
         });
         ScrollPane scroll = new ScrollPane();
@@ -368,6 +402,7 @@ public class Tegevused{
         box.getChildren().addAll(grid, scroll);
         return box;
     }
+
     public VBox annaAktiivsus() throws SQLException{
         VBox box = new VBox();
         GridPane grid = new GridPane();
@@ -391,6 +426,7 @@ public class Tegevused{
                     tulemus.setText(andmebaas.sqlAktiivsus(valikud.getValue()));
                 }
                 catch(SQLException e){
+                    Hoiatus.aken("Tekkis viga");
                     throw new RuntimeException(e);
                 }
 
