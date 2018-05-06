@@ -122,19 +122,6 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         return vastused;
     }
 
-    public List<String> sqlVanemad() throws SQLException {
-        String päring = "SELECT Eesnimi + ' ' + Perenimi AS nimi from Lapsevanemad";
-        List<String> vastused = new ArrayList<>();
-        PreparedStatement vanemad = connection.prepareStatement(päring);
-        ResultSet tulemus = vanemad.executeQuery();
-        while (tulemus.next()) {
-            vastused.add(tulemus.getString("Aasta"));
-        }
-        tulemus.close();
-        vanemad.close();
-        return vastused;
-    }
-
     public List<String> sqlAastad()throws SQLException { //comboboxis (saavutused) need aastad, mis andmebaasis
         String päring = "select distinct year(aeg) as Aasta from võistlused";
         List<String> vastused = new ArrayList<>();
