@@ -63,9 +63,12 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
     }
 
     public String sqlÕpilaseAndmed(String nimi) throws SQLException{
+        int indeks = nimi.lastIndexOf(" "); //kõik enne viimast tühikut on eesnimi
+        String eesnimi = nimi.substring(0, indeks);
+        String perenimi = nimi.substring(indeks+1, nimi.length());
         String[] jupid = nimi.trim().split(" ");
         String päring = "select * from Õpilased where eesnimi = ? and perenimi = ?";
-        Collections.addAll(päringus, jupid[0], jupid[1]);
+        Collections.addAll(päringus, eesnimi, perenimi);
         Collections.addAll(elemendid, "Eesnimi", "Perenimi", "Aadress", "Telefon", "E-Mail", "isikukood", "Sünnikuupäev");
 
         korduv(päring, true);
@@ -155,10 +158,12 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
     }
 
     public void sqlLisaKohalolu(String nimi, String aeg, String rühm) throws SQLException{
-        String[] jupid = nimi.trim().split(" ");
+        int indeks = nimi.lastIndexOf(" ");
+        String eesnimi = nimi.substring(0, indeks);
+        String perenimi = nimi.substring(indeks+1, nimi.length());
         String päring = "insert into Kohalolu (Õpilane_ID, Trenn_ID)\n" +
                 "values (f_õpilaneID(?, ?), f_trennID(f_rühmId(?), datetime(?)))";
-        Collections.addAll(päringus, jupid[0], jupid[1], rühm, aeg);
+        Collections.addAll(päringus, eesnimi, perenimi, rühm, aeg);
         PreparedStatement lisa = connection.prepareStatement(päring);
         käivitaPäring(päring);
         andmed.close();
@@ -181,8 +186,14 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
 
     }
     public void sqlLisaÕpilane(String nimi, String aadress, String isikukood, String email, String telefon, String vanem) throws SQLException{
-        String[] õp = nimi.split(" ");
-        String[] lv = vanem.split(" ");
+        int indeks = nimi.lastIndexOf(" ");
+        String eesnimi = nimi.substring(0, indeks);
+        String perenimi = nimi.substring(indeks+1, nimi.length());
+
+        int indeksLV = vanem.lastIndexOf(" ");
+        String eesnimiLV = vanem.substring(0, indeksLV);
+        String perenimiLV = vanem.substring(indeksLV+1, vanem.length());
+
         String aasta;
         if (isikukood.substring(0, 1).equals("5")||isikukood.substring(0, 1).equals("6")){
             aasta = "20";
@@ -192,15 +203,18 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         String kuupäev = aasta + isikukood.substring(1, 3) + "-" + isikukood.substring(3, 5) + "-" + isikukood.substring(5,7);
         String päring = "insert into Õpilased (Lapsevanem_ID, Eesnimi, Perenimi, Aadress, Telefon, \"E-Mail\", Isikukood, Sünnikuupäev)\n" +
                 "values (f_vanemId(?, ?), ?, ?, ?, cast(? as int), ?, ?, date(?))";
-        Collections.addAll(päringus, lv[0], lv[1], õp[0], õp[1], aadress, telefon, email, isikukood, kuupäev);
+        Collections.addAll(päringus, eesnimiLV, perenimiLV, eesnimi, perenimi, aadress, telefon, email, isikukood, kuupäev);
         käivitaPäring(päring);
         andmed.close();
     }
     public void sqlLisaVanem(String nimi, String aadress, String kommentaar, String email, String telefon) throws SQLException{
-        String[] vanem = nimi.split(" ");
+        int indeks = nimi.lastIndexOf(" ");
+        String eesnimi = nimi.substring(0, indeks);
+        String perenimi = nimi.substring(indeks+1, nimi.length());
+
         String päring = "insert into Lapsevanemad (Eesnimi, Perenimi, Aadress, Telefon, \"E-Mail\", Kommentaar)\n" +
                 "values (?, ?, ?, cast(? as int), ?, ?)";
-        Collections.addAll(päringus, vanem[0], vanem[1], aadress, telefon, email, kommentaar);
+        Collections.addAll(päringus, eesnimi, perenimi, aadress, telefon, email, kommentaar);
         käivitaPäring(päring);
         andmed.close();
     }

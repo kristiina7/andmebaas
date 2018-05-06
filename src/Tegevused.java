@@ -294,6 +294,7 @@ public class Tegevused{
                 }
             }});
         lisa.setOnMouseClicked(event -> {
+            //uue trenni lisamine
             if (teine.getText().equals("Rühm")){
                 if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
                         || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty()){
@@ -346,9 +347,9 @@ public class Tegevused{
                         Hoiatus.aken("Tekkis viga");
                         throw new RuntimeException(e);
                     }
-                    eemalda(sisend);
                 }
             }
+            //uue võistluse lisamine
             if (teine.getText().equals("Nimi")) {
                 if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
                         || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty() || sisse_viies.getText().isEmpty()) {
@@ -363,22 +364,22 @@ public class Tegevused{
                     }
                 }
                 }
-                if (teine.getText().equals("Isikukood") && !grid.getChildren().contains(sisse_email)) {
+                //uue õpilase lisamine
+                if (teine.getText().equals("Isikukood") && !grid.getChildren().contains(sisse_email)) { //emaili kontroll, et teada, kas lapsevanem on olemas või ei
                     if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
                             || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty()
-                            || sisse_viies.getText().isEmpty() || sisse_kuues.getText().isEmpty()){
+                            || sisse_viies.getText().isEmpty() || sisse_kuues.getText().isEmpty()) {
                         Hoiatus.aken("Tühi väli! Täida kõik väljad.");
+                    } else {
+                        try {
+                            andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
+                        } catch (SQLException e) {
+                            Hoiatus.aken("Tekkis viga");
+                            throw new RuntimeException(e);
+                        }
                     }
-                    else {
-                    try {
-                        andmebaas.sqlLisaÕpilane(sisse_esimene.getText(), sisse_kolmas.getText(), sisse_teine.getText(), sisse_viies.getText(), sisse_neljas.getText(), sisse_kuues.getText());
-                    } catch (SQLException e) {
-                        Hoiatus.aken("Tekkis viga");
-                        throw new RuntimeException(e);
-                    }
-                    eemalda(sisend);
                 }
-                if (teine.getText().equals("Isikukood") && grid.getChildren().contains(sisse_email)) {
+                if (teine.getText().equals("Isikukood") && grid.getChildren().contains(sisse_email)) { //kui lapsevanemat pole veel andmebaasis
                     if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
                             || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty()
                             || sisse_viies.getText().isEmpty() || sisse_kuues.getText().isEmpty()
@@ -393,9 +394,8 @@ public class Tegevused{
                         Hoiatus.aken("Tekkis viga");
                         throw new RuntimeException(e);
                     }
-                    eemalda(sisend);
                 }}
-            }
+            eemalda(sisend);
         });
         ScrollPane scroll = new ScrollPane();
         scroll.setContent(grid);

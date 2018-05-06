@@ -39,19 +39,18 @@
     -fx-text-fill: #ffffff;
     -fx-padding: 10;
 }
-
- .label{
+.label{
     -fx-text-fill: #ffffff;
- }
- .label-event{
+}
+.label-event{
     -fx-text-fill: #e30311;
- }
- .scroll-pane > .viewport {
+}
+.scroll-pane > .viewport {
     -fx-background-color: transparent;
- }
+}
 
 .scroll-pane {
-   -fx-background-color: transparent;
+    -fx-background-color: transparent;
 }
 
 #pane{

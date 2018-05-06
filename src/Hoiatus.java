@@ -16,7 +16,9 @@ public static void aken(String teade){
 
     popupwindow.setTitle("Hoiatusaken");
     Label label1= new Label(teade);
+    label1.setStyle(" -fx-font-family: \"Bernard MT Condensed\"; -fx-font-size: 14pt;");
     Button button1= new Button("OK");
+    button1.setStyle("-fx-focus-color: black; -fx-faint-focus-color: transparent;");
 
     button1.setOnAction(e -> popupwindow.close());
 
