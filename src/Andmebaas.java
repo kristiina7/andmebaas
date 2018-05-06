@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsimärkidega, uurida juhendit
+public class Andmebaas{
     private Connection connection;
     private ResultSet tulemus;
     private String vastus = "";
@@ -140,7 +140,6 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         VõistlusteAastad.close();
         return vastused;
     }
-
 
     public String sqlAktiivsus(String rühm) throws SQLException{
         String päring = "select eesnimi + ' ' + perenimi as Nimi, count() as Trenne from Õpilased, Kohalolu, Trennid, Rühmad\n" +
