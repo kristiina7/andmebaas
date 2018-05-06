@@ -352,7 +352,7 @@ public class Tegevused{
             //uue võistluse lisamine
             if (teine.getText().equals("Nimi")) {
                 if (sisse_esimene.getText().isEmpty() || sisse_teine.getText().isEmpty()
-                        || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty() || sisse_viies.getText().isEmpty()) {
+                        || sisse_kolmas.getText().isEmpty() || sisse_neljas.getText().isEmpty()) {
                     Hoiatus.aken("Tühi väli! Täida kõik väljad.");
                 } else {
                     try {
