@@ -67,6 +67,9 @@ public class Andmebaas{ //sql käske mitte teha sõnede ühendamisega vaid küsi
         String eesnimi = nimi.substring(0, indeks);
         String perenimi = nimi.substring(indeks+1, nimi.length());
         String[] jupid = nimi.trim().split(" ");
+        if (jupid.length < 2){
+            Hoiatus.aken("Nimi on vigane!");
+        }
         String päring = "select * from Õpilased where eesnimi = ? and perenimi = ?";
         Collections.addAll(päringus, eesnimi, perenimi);
         Collections.addAll(elemendid, "Eesnimi", "Perenimi", "Aadress", "Telefon", "E-Mail", "isikukood", "Sünnikuupäev");
